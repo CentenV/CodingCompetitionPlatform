@@ -1,22 +1,63 @@
-html {
-  font-size: 14px;
+@font-face {
+    font-family: Montserrat;
+    src: url(/fonts/Montserrat/Montserrat-VariableFont_wght.ttf)
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+:root {
+    --background-color: #121212;
+    --surface-color: #353535;
+    --border-radius: 0.5em;
+    --text-color: white;
+
+    color: var(--text-color);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
 
 body {
-  margin-bottom: 60px;
+    background-color: var(--background-color);
+/*    padding: 1em;*/
+    margin: 1em;
+}
+
+
+/* Header */
+header {
+    height: 4em;
+    background-color: var(--surface-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    /*    box-shadow: 0 0 0.1em black;*/
+    border-radius: var(--border-radius);
+}
+
+.page-link-button, .page-link-button:visited, .page-link-button:link {
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 700;
+    font-size: 1.4em;
+    color: var(--text-color);
+    padding: 0.5em 1em 0.5em 1em;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+}
+
+.page-link-button:hover {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+
+/* Page Layout*/
+.content {
+    
+}
+
+
+/* Home / Welcome Page */
+#welcome-title {
+    font-family: Montserrat;
+    font-size: 2em;
+    font-weight: 700;
 }
