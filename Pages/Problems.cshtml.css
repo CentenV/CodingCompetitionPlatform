@@ -1,0 +1,15 @@
+﻿#problems-container {
+/*    background: var(--surface-color);*/
+    border-radius: var(--border-radius);
+    margin-top: 1.5em;
+    margin-left: var(--side-margins);
+    margin-right: var(--side-margins);
+    width: auto;
+    height: auto;
+    padding: 1em;
+}
+
+
+.problem-entry {
+    background: var(--surface-color);
+}

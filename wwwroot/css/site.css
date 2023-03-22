@@ -8,8 +8,12 @@
     --surface-color: #353535;
     --border-radius: 0.5em;
     --text-color: white;
-
+    --font-family: Montserrat;
     color: var(--text-color);
+
+
+    /* Problem Page */
+    --side-margins: 10em;
 }
 
 
@@ -34,7 +38,7 @@ header {
 
 .page-link-button, .page-link-button:visited, .page-link-button:link {
     text-align: center;
-    font-family: Montserrat;
+    font-family: var(--font-family);
     font-weight: 700;
     font-size: 1.4em;
     color: var(--text-color);
@@ -52,12 +56,4 @@ header {
 /* Page Layout*/
 .content {
     
-}
-
-
-/* Home / Welcome Page */
-#welcome-title {
-    font-family: Montserrat;
-    font-size: 2em;
-    font-weight: 700;
 }
