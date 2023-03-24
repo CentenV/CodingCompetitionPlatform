@@ -16,6 +16,9 @@
     --side-margins: 10em;
 }
 
+* {
+    font-family: var(--font-family);
+}
 
 body {
     background-color: var(--background-color);

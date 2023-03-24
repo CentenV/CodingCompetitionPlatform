@@ -8,6 +8,7 @@ namespace CodingCompetitionPlatform.Pages
     {
         [BindProperty]
         public IFormFile? uploadedFile { get; set; }
+        public string error { get; set; }
         
         public void OnGet()
         {
@@ -16,12 +17,27 @@ namespace CodingCompetitionPlatform.Pages
         public void OnPost() 
         {
             // File Upload
-            Console.WriteLine(uploadedFile.FileName);
-            string saveFolder = Path.Combine(@"C:\Users\vincent\Documents\TEMP", uploadedFile.FileName);
-            using (FileStream fileStream = new FileStream(saveFolder, FileMode.Create))
+            try
             {
-                uploadedFile.CopyTo(fileStream);
+                string saveFolder = Path.Combine(@"C:\Users\Administrator\Documents\TEMP", uploadedFile.FileName);
+
+                using (FileStream fileStream = new FileStream(saveFolder, FileMode.Create))
+                {
+                    uploadedFile.CopyTo(fileStream);
+                }
             }
+            catch (NullReferenceException nullex) 
+            {
+                error = "No File Uploaded.";
+                return;
+            }
+            catch (Exception ex)
+            {
+                error = ex.GetType().ToString();
+                return;
+            }
+
+
         }
     }
 }

@@ -1,0 +1,30 @@
+﻿@page "/login"
+@model CodingCompetitionPlatform.Pages.LoginModel
+@{
+    Layout = null;
+}
+
+<link rel="stylesheet" type="text/css" href="/css/site.css" />
+<link rel="stylesheet" type="text/css" href="/css/loginpage.css" />
+
+<div id="login-container">
+    <div id="banner">
+        <img src="/assets/placeholder.png" id="banner-image"/>
+    </div>
+
+    <div id="login-content">
+        <div id="login">
+            <form method="post" enctype="multipart/form-data">
+                <div id="competition-id-field">
+                    <input id="competition-id-input" type="text" required />
+                    <label id="competition-id-input-label">Competition ID</label>
+                </div>
+
+                <a>Submit</a>
+            </form>
+            <div id="login-error"></div>
+        </div>
+            
+    </div>
+
+</div>

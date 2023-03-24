@@ -1,0 +1,72 @@
+﻿#login-container {
+    width: auto;
+    height: auto;
+}
+#login-content {
+    display: grid;
+    grid-template-columns: 1fr 1em 1fr;
+    width: auto;
+}
+
+
+#banner {
+    display: flex;
+    justify-content: center;
+    width: auto;
+    height: 40vh;
+}
+
+#banner-image {
+    width: 75vw;
+    border-radius: var(--border-radius);
+}
+
+
+#login {
+    grid-column: 1;
+}
+
+/* Text Field */
+#competition-id-field {
+    position: relative;
+}
+
+    #competition-id-field input {
+        width: 350px;
+        height: 60px;
+        border-radius: var(--border-radius);
+        font-size: 18px;
+        padding: 0 15px;
+        border: 2px solid #fff;
+        background: transparent;
+        color: #fff;
+        outline: none;
+    }
+
+    #competition-id-field label {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #fff;
+        font-size: 19px;
+        pointer-events: none;
+        transition: 0.3s;
+    }
+
+#competition-id-input:focus {
+    border: 2px solid #ffcc00;
+}
+
+    #competition-id-input:focus ~ label,
+    #competition-id-input:valid ~ label {
+        top: 0;
+        left: 15px;
+        font-size: 16px;
+        padding: 0 2px;
+        background: var(--background-color);
+    }
+
+#competition-id-input-label {
+    font-family: var(--font-family);
+}
