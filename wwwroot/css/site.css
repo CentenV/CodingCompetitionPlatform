@@ -11,6 +11,8 @@
     --font-family: Montserrat;
     color: var(--text-color);
 
+    /* Sidebar */
+    --sidebar-width: 20vw;
 
     /* Problem Page */
     --side-margins: 10em;
@@ -24,39 +26,47 @@ body {
     background-color: var(--background-color);
 /*    padding: 1em;*/
     margin: 1em;
+    display: grid;
+    grid-template-columns: var(--sidebar-width) auto;
 }
 
 
 /* Header */
 header {
-    height: 4em;
-    background-color: var(--surface-color);
+    grid-column: 1 / 1;
+    height: 100%;
     display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    /*    box-shadow: 0 0 0.1em black;*/
+    flex-direction: column;
+    gap: 2em;
+    justify-content: center;
     border-radius: var(--border-radius);
+    width: 18vw;
 }
 
+
 .page-link-button, .page-link-button:visited, .page-link-button:link {
-    text-align: center;
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 1.4em;
     color: var(--text-color);
-    padding: 0.5em 1em 0.5em 1em;
+    padding: 0.5em 0em 0.5em 1em;
     border-radius: var(--border-radius);
     text-decoration: none;
+    background-color: var(--surface-color);
+    border: 0.1em solid rgba(0,0,0,0);
 }
 
 .page-link-button:hover {
     background-color: var(--background-color);
     color: var(--text-color);
+    border: 0.1em solid white;
 }
 
 
 /* Page Layout*/
-.content {
-    
+.container {
+    grid-column: 2;
+}
+.live-content {
+    border: none;
 }

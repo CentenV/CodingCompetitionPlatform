@@ -16,11 +16,14 @@
         <div id="login">
             <form method="post" enctype="multipart/form-data">
                 <div id="competition-id-field">
-                    <input id="competition-id-input" type="text" required />
-                    <label id="competition-id-input-label">Competition ID</label>
+                    <input id="competition-id-input" type="text" asp-for="Credential.competitorId" required />
+                    <label id="competition-id-input-label" asp-for="Credential.competitorId">Competition ID</label>
                 </div>
-
-                <a>Submit</a>
+                <div id="competition-id-field">
+                    <input id="competition-id-input" type="password" asp-for="Credential.passphrase" required />
+                    <label id="competition-id-input-label" asp-for="Credential.passphrase">Passphrase</label>
+                </div>
+                <button type="submit" value="Login">Submit</button>
             </form>
             <div id="login-error"></div>
         </div>

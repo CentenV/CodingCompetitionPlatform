@@ -1,11 +1,20 @@
 ﻿/* Home / Welcome Page */
+
 #home-container {
-    background: var(--surface-color);
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+#problem-container {
     border-radius: var(--border-radius);
-    margin-top: 1.5em;
-    padding: 1em;
     width: auto;
     height: auto;
+    grid-column: 1 / 1;
+}
+#problems-iframe {
+    height: 100%;
+    width: 100%;
+    background: aqua;
 }
 
 #home-header {
