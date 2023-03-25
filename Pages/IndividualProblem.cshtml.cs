@@ -6,12 +6,15 @@ namespace CodingCompetitionPlatform.Pages
 {
     public class ProblemModel : PageModel
     {
+        [FromQuery(Name = "problemIndex")]      // Query string!!!!!!
+        public int problemIndex { get; set; }
         [BindProperty]
         public IFormFile? uploadedFile { get; set; }
-        public string error { get; set; }
+        public string? error { get; set; }
         
         public void OnGet()
         {
+
         }
 
         public void OnPost() 
@@ -26,7 +29,7 @@ namespace CodingCompetitionPlatform.Pages
                     uploadedFile.CopyTo(fileStream);
                 }
             }
-            catch (NullReferenceException nullex) 
+            catch (NullReferenceException) 
             {
                 error = "No File Uploaded.";
                 return;

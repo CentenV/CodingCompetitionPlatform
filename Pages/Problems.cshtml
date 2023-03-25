@@ -1,15 +1,41 @@
 ﻿@page "/problems"
+@using CodingCompetitionPlatform.Services;
 @model CodingCompetitionPlatform.Pages.ProblemsModel
 @{
     Layout = null;
 }
 
-<div id="problems-container">
-    <table>
-        <tr>
-            <div>
-                <a class="problem-entry" href="/problem">Problem 1</a>
-            </div>
-        </tr>
-    </table>
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/CodingCompetitionPlatform.styles.css" asp-append-version="true" />
+
+<div id="problems-container" runat="server">
+    <a class="problem-entry" href="/problem?problemIndex=2" target="_top">
+        <span class="problem-title">Problem Name</span>
+        <span class="problem-difficulty easy">Difficulty</span>
+        <span class="problem-points">10 points</span>
+    </a>
+    <a class="problem-entry completed" href="/problem?problemIndex=2" target="_top">
+        <span class="problem-title">Completed Problem Name</span>
+        <span class="problem-difficulty easy">Difficulty</span>
+        <span class="problem-points">10 points</span>
+    </a>
+    <a class="problem-entry" href="/problem" target="_top">
+        <span class="problem-title">Problem Name</span>
+        <span class="problem-difficulty medium">Difficulty</span>
+        <span class="problem-points">25 points</span>
+    </a>
+    <a class="problem-entry" href="/problem" target="_top">
+        <span class="problem-title">Problem Name</span>
+        <span class="problem-difficulty hard">Difficulty</span>
+        <span class="problem-points">50 points</span>
+    </a>
+
+    @foreach (var problem in LoadProblems.PROBLEMS)
+    {
+        <a class="problem-entry" href="/problem" target="_top">
+            <span class="problem-title">@problem.name</span>
+            <span class="problem-difficulty @problem.difficulty">@LoadProblems.convertTitle(problem.difficulty)</span>
+            <span class="problem-points">@problem.points points</span>
+        </a>
+    }
 </div>

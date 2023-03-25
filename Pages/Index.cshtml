@@ -1,8 +1,12 @@
 ﻿@page
+@using CodingCompetitionPlatform.Services;
 @model IndexModel
 @{
     ViewData["Title"] = "Home";
     Layout = "_Layout";
+
+    // Initialize Problems
+    LoadProblems.initialize();
 }
 
 <script>
@@ -12,7 +16,7 @@
     }, 2000);
 </script>
 
-<div>@Model.name</div>
+<div>@User.Identity.Name</div>
 
 <div id="home-container">
     <div id="problem-container">

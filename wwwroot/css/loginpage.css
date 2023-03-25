@@ -1,4 +1,8 @@
-﻿#login-container {
+﻿body {
+    height: 96%;
+}
+
+#login-container {
     width: auto;
     height: auto;
 }

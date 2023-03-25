@@ -1,15 +1,74 @@
 ﻿#problems-container {
-/*    background: var(--surface-color);*/
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
     border-radius: var(--border-radius);
-    margin-top: 1.5em;
-    margin-left: var(--side-margins);
-    margin-right: var(--side-margins);
     width: auto;
     height: auto;
-    padding: 1em;
+/*    padding: 1em;*/
 }
 
 
-.problem-entry {
-    background: var(--surface-color);
+/* PROBLEM ENTRY */
+.problem-entry, .problem-entry:visited, .problem-entry:link {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    height: 4em;
+    border: var(--border-width) solid rgba(0,0,0,0);
+    text-decoration: none;
+    padding: 1em;
+}
+.problem-entry:hover {
+    border: var(--border-width) solid white;
+    background-color: var(--background-color);
+    text-decoration: none;
+}
+
+.problem-entry span {
+    background-color: rgba(0,0,0,0);
+    color: var(--text-color);
+}
+
+/* PROBLEM DATA */
+/* Problem Title */
+.problem-title {
+    grid-column: 1;
+    grid-row: 1;
+    font-weight: 700;
+    font-size: 2em;
+}
+/* Problem Points */
+.problem-points {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    justify-self: end;
+    font-weight: 500;
+    font-size: 1.5em;
+}
+/* Problem Difficulty & Colors */
+.problem-difficulty {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    justify-self: start;
+}
+.easy {
+    color: green !important;
+    font-weight: 600;
+}
+.medium {
+    color: yellow !important;
+    font-weight: 600;
+}
+.hard {
+    color: darkred !important;
+    font-weight: 600;
+}
+/* Problem Completed */
+.completed {
+    pointer-events: none;
 }

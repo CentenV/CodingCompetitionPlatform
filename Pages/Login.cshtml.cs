@@ -32,6 +32,8 @@ namespace CodingCompetitionPlatform.Pages
 
                 await HttpContext.SignInAsync(Credential.COOKIE_NAME, claimsPrincipal);
 
+                // INCLUDE IN REAL IMPLEMENTATION
+
                 return RedirectToPage("/index");
             }
 

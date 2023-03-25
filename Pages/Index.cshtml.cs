@@ -11,9 +11,6 @@ namespace CodingCompetitionPlatform.Pages
     {
         private readonly ILogger<IndexModel> _logger;
 
-        // TEMP CODE ********************
-        public string name { get; set; }
-
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
@@ -21,7 +18,7 @@ namespace CodingCompetitionPlatform.Pages
 
         public void OnGet()
         {
-            // TEMP CODE ********************
+            // TEMP CODE ********************!!!!!!!!!!!!!!!
             //HttpContext.Session.Set("username", Encoding.ASCII.GetBytes("TEST1234"));
             //Console.WriteLine(HttpContext.Session.IsAvailable);
             //byte[] userSession = HttpContext.Session.Get("username");
