@@ -25,7 +25,7 @@ namespace CodingCompetitionPlatform.Pages
             if (Credential.competitorId == "TEST1234" && Credential.passphrase == "t3st1ng")
             {
                 var claims = new List<Claim> {
-                    new Claim(ClaimTypes.NameIdentifier, "TEST1234"),
+                    new Claim(ClaimTypes.Name, "TEST1234"),
                 };
                 var identity = new ClaimsIdentity(claims, Credential.COOKIE_NAME);
                 ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);

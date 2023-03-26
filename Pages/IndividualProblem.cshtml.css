@@ -1,0 +1,32 @@
+﻿#problem-container {
+    background-color: var(--surface-color);
+    padding: 2em;
+    border-radius: var(--border-radius);
+/*    height: 100%;*/
+}
+
+#problem-detail-container {
+    
+}
+
+/* Problem Header */
+#problem-header {
+    display: flex;
+}
+#problem-title {
+    font-size: 2.2em;
+    font-weight: 800;
+    align-self: end;
+}
+#problem-detail-index {
+    
+}
+
+
+#problem-detail-description {
+}
+
+#problem-detail-description p {
+    font-size: 1.2em;
+    line-height: 1.7;
+}

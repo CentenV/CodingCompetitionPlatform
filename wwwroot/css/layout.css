@@ -1,7 +1,5 @@
 ﻿body {
-/*    padding: 1em;*/
-    margin: 1em;
-    overflow: hidden;
+    padding: 1em;
     display: grid;
     grid-template-columns: var(--sidebar-width) auto;
 }

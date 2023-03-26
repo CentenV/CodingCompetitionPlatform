@@ -1,21 +1,26 @@
-﻿/* Home / Welcome Page */
-
+﻿/* HOME / DASHBOARD PAGE */
+/*************************/
 #home-container {
     display: grid;
     grid-template-columns: auto auto;
+    height: 100%;
+    overflow: hidden;
 }
 
-#problem-container {
+/* IFRAME SHOWING ALL PROBLEMS */
+#problem-iframe-container {
     border-radius: var(--border-radius);
     width: auto;
-    height: auto;
+    height: inherit;
     grid-column: 1 / 1;
 }
 #problems-iframe {
-    height: 100vh;
+    height: 99%;
     width: 100%;
+    scrollbar-color: red;
 }
 
+/*!!!!!!!!!!!*/
 #home-header {
     padding-top: 1.5em;
     display: flex;

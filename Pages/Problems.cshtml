@@ -8,13 +8,13 @@
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/CodingCompetitionPlatform.styles.css" asp-append-version="true" />
 
-<div id="problems-container" runat="server">
-    <a class="problem-entry" href="/problem?problemIndex=2" target="_top">
+<div id="problems-container">
+    <a class="problem-entry" href="/problem?problemIndex=1" target="_top">
         <span class="problem-title">Problem Name</span>
         <span class="problem-difficulty easy">Difficulty</span>
         <span class="problem-points">10 points</span>
     </a>
-    <a class="problem-entry completed" href="/problem?problemIndex=2" target="_top">
+    <a class="problem-entry completed" href="/problem" target="_top">
         <span class="problem-title">Completed Problem Name</span>
         <span class="problem-difficulty easy">Difficulty</span>
         <span class="problem-points">10 points</span>
@@ -32,7 +32,7 @@
 
     @foreach (var problem in LoadProblems.PROBLEMS)
     {
-        <a class="problem-entry" href="/problem" target="_top">
+        <a class="problem-entry" href="/problem?problemIndex=@problem.problemIndex" target="_top">
             <span class="problem-title">@problem.name</span>
             <span class="problem-difficulty @problem.difficulty">@LoadProblems.convertTitle(problem.difficulty)</span>
             <span class="problem-points">@problem.points points</span>

@@ -5,7 +5,7 @@ namespace CodingCompetitionPlatform.Services
     public class LoadProblems
     {
         public static bool initialized = false;
-        private static string path = "C:\\Users\\Administrator\\Documents\\CODEREPO\\playgrounds\\jsontest\\sampleproblems.json";
+        private static string path = @"wwwroot/sampleproblems.json";
         public static Problem[]? PROBLEMS { get; set; }
         public static int? NUMBEROFPROBLEMS { get; set; }
 

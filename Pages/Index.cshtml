@@ -5,7 +5,7 @@
     ViewData["Title"] = "Home";
     Layout = "_Layout";
 
-    // Initialize Problems
+    // Making sure that problems are initialized
     LoadProblems.initialize();
 }
 
@@ -19,7 +19,7 @@
 <div>@User.Identity.Name</div>
 
 <div id="home-container">
-    <div id="problem-container">
+    <div id="problem-iframe-container">
         <iframe src="/problems" id="problems-iframe" class="live-content"></iframe>
     </div>
 </div>

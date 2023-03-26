@@ -1,11 +1,31 @@
 ﻿@page "/problem"
+@using CodingCompetitionPlatform.Services
 @model CodingCompetitionPlatform.Pages.ProblemModel
 @{
+    // Making sure that problems are initialized
+    LoadProblems.initialize();
+
+    var currentProblem = LoadProblems.PROBLEMS[Model.problemIndex - 1];
 }
 
-<form method="post" enctype="multipart/form-data">
-    <input type="file" asp-for="uploadedFile" accept=".py" />
-    <input type="submit" />
-</form>
+<div id="problem-container">
+    <div id="problem-detail-container">
+        <div id="problem-header">
+            <span id="problem-title">@currentProblem.name</span>
+            <span id="problem-detail-index">@currentProblem.problemIndex</span>
+        </div>
+        <div id="problem-detail-description">
+            <p>@currentProblem.description</p>
+        </div>
+    </div>
 
-<div>@Model.error</div>
+    <div id="problem-submission-container">
+
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" asp-for="uploadedFile" accept=".py" />
+        <input type="submit" />
+    </form>
+
+    <div>@Model.error</div>
+</div>

@@ -3,6 +3,7 @@
     src: url(/fonts/Montserrat/Montserrat-VariableFont_wght.ttf)
 }
 
+/* VARIABLES */
 :root {
     --background-color: #121212;
     --surface-color: #353535;
@@ -20,11 +21,17 @@
     --border-hover: var(--border-width) solid white;
 }
 
+/* UNIVERSAL THEMING */
 * {
     font-family: var(--font-family);
-    background-color: var(--background-color);
     transition: 0.2s;
 }
+html, body {
+    height: 98.3%;
+    margin: 0;
+    background-color: var(--background-color);
+}
+
 
 a, a:visited, a:link {
     border-radius: var(--border-radius);
