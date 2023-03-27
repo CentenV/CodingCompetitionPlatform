@@ -9,7 +9,7 @@ namespace CodingCompetitionPlatform.Services
         public static Problem[]? PROBLEMS { get; set; }
         public static int? NUMBEROFPROBLEMS { get; set; }
 
-        public static void initialize()
+        public static void Initialize()
         {
             if (!LoadProblems.initialized)
             {
@@ -34,7 +34,7 @@ namespace CodingCompetitionPlatform.Services
             }
         }
 
-        public static string convertTitle(string initialTitle)
+        public static string ConvertTitle(string initialTitle)
         {
             // Capitalizes the first letter of the difficulty
             if (initialTitle == "easy") 

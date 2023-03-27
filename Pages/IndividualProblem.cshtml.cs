@@ -22,17 +22,20 @@ namespace CodingCompetitionPlatform.Pages
 
         public void OnPost() 
         {
-            string savePath;
+            string saveFileName, saveFilePath;
             // File Upload
             try
             {
                 Console.WriteLine($"Uploaded file: {uploadedFile.FileName}");
                 //string savePath = Path.Combine(@"C:\Users\Administrator\Documents\TEMP", uploadedFile.FileName);
                 // !!!!!! Add Team name to file name
-                savePath = Path.Combine(@"C:\Users\Administrator\Documents\TEMP", $"{User.Identity.Name}_Problem{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}.py");
-                Console.WriteLine($"Saved file: {savePath}");
+                // Add multiplelanguage support
+                saveFileName = $"{User.Identity.Name}_Problem{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}.py";
+                Console.WriteLine($"Saved file name: {saveFileName}");
+                saveFilePath = Path.Combine(PlatformConfig.SUBMISSION_OUTPUT_DIR, saveFileName);
+                Console.WriteLine($"Saved file path: {saveFilePath}");
 
-                using (FileStream fileStream = new FileStream(savePath, FileMode.Create))
+                using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Create))
                 {
                     uploadedFile.CopyTo(fileStream);
                 }
@@ -50,8 +53,8 @@ namespace CodingCompetitionPlatform.Pages
             }
 
             // Execute File
-            CodeSubmit submissionInstance = new CodeSubmit(savePath);
-            submissionInstance.execute();
+            CodeSubmit submissionInstance = new CodeSubmit(saveFileName);
+            submissionInstance.Execute(User.Identity.Name);
         }
 
         public IActionResult OnGetProblemOnClick(int problemIndex)

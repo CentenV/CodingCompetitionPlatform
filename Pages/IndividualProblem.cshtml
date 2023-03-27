@@ -3,7 +3,7 @@
 @model CodingCompetitionPlatform.Pages.ProblemModel
 @{
     // Making sure that problems are initialized
-    LoadProblems.initialize();
+    LoadProblems.Initialize();
 
     var currentProblem = LoadProblems.PROBLEMS[Model.problemIndex - 1];
 }

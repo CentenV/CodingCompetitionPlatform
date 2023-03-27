@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using CodingCompetitionPlatform.Services;
+using System.Diagnostics;
 
 namespace CodingCompetitionPlatform.Services
 {
@@ -12,23 +13,40 @@ namespace CodingCompetitionPlatform.Services
     }
     public class CodeSubmit
     {
-        private string filePath { get; set; }
-        private ProcessStartInfo codeExecutionProcess { get; set; }
-        public CodeSubmit(string pathToSavedFile)
-        {
-            filePath = pathToSavedFile;
+        private string fileName { get; set; }
 
-            //"docker", $"build -t python-test /"
-            codeExecutionProcess = new ProcessStartInfo("ipconfig");
-            //codeExecutionProcess.UseShellExecute = false;
-            //codeExecutionProcess.RedirectStandardOutput = true;
-            //codeExecutionProcess.RedirectStandardError = true;
+        // Public Methods
+        public CodeSubmit(string savedFileName)
+        {
+            fileName = savedFileName;
         }
 
-        public bool execute()
+        public void Execute(string userid)
         {
-            Process.Start(codeExecutionProcess);
-            return true;
+            string dockerImageName = "python:" + userid;
+            Console.WriteLine("\n" + dockerImageName);
+
+            string buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f C:\Users\Administrator\Documents\CODEREPO\playgrounds\docker\python\python.dockerfile --build-arg input_file_name={fileName}";
+            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {fileName}_OUTPUT.txt";
+            string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
+
+            executeCommand(buildDockerImageCmd);
+            executeCommand(runDockerImageCmd);
+            executeCommand(cleanupDockerImageCmd);
+
+            Console.WriteLine($"\nExecuted {fileName}\n\n\n\n");
+        }
+
+
+        // Internal Methods
+        private void executeCommand(string command)
+        {
+            ProcessStartInfo ps = new ProcessStartInfo(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "/c " + command);
+            ps.WorkingDirectory = PlatformConfig.SUBMISSION_OUTPUT_DIR;
+            ps.UseShellExecute = false;
+            Console.WriteLine(command);
+            
+            Process.Start(ps).WaitForExit();
         }
     }
 }
