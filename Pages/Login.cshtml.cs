@@ -26,6 +26,7 @@ namespace CodingCompetitionPlatform.Pages
             {
                 var claims = new List<Claim> {
                     new Claim(ClaimTypes.Name, "TEST1234"),
+                    new Claim(ClaimTypes.GroupSid, "TEAM1234"),
                 };
                 var identity = new ClaimsIdentity(claims, Credential.COOKIE_NAME);
                 ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
