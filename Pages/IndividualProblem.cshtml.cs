@@ -20,25 +20,33 @@ namespace CodingCompetitionPlatform.Pages
         
         public void OnGet()
         {
+            output = "No Output";
         }
 
         public async Task OnPostAsync() 
         {
             // File Upload: save file into server directory with the naming convention of TEAMID_USERID_PROBLEMNUMBER_TIME.ext
-            string saveFileName, saveFilePath;
+            string identifier, saveFolderPath, savedFileName, fullSavedFilePath;
             try
             {
+                output = "Uploading File...";
                 Console.WriteLine($"Uploaded file: {uploadedFile.FileName}");
                 //string savePath = Path.Combine(@"C:\Users\Administrator\Documents\TEMP", uploadedFile.FileName);
                 // !!!!!! Add Team name to file name
                 // Add multiplelanguage support
-                saveFileName = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}.py";
-                saveFilePath = Path.Combine(PlatformConfig.SUBMISSION_OUTPUT_DIR, saveFileName);
+                identifier = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}";
+                savedFileName = $"{identifier}.py";
+                saveFolderPath = Path.Combine(PlatformConfig.SUBMISSION_OUTPUT_DIR, identifier);
 
-                Console.WriteLine($"Saved file name: {saveFileName}");
-                Console.WriteLine($"Saved file path: {saveFilePath}");
+                // Create Directory
+                if (!Directory.Exists(saveFolderPath)) { Directory.CreateDirectory(saveFolderPath); }
 
-                using (FileStream fileStream = new FileStream(saveFilePath, FileMode.Create))
+                fullSavedFilePath = Path.Combine(saveFolderPath, savedFileName);
+
+                Console.WriteLine($"Saved file name: {savedFileName}");
+                Console.WriteLine($"Saved file path: {fullSavedFilePath}");
+
+                using (FileStream fileStream = new FileStream(fullSavedFilePath, FileMode.Create))
                 {
                     uploadedFile.CopyTo(fileStream);
                 }
@@ -57,10 +65,11 @@ namespace CodingCompetitionPlatform.Pages
 
 
             // Execute File and Read Output Back Out
+            output += "\nExecuting code...";
             string outputFileName, outputFilePath;
 
-            outputFileName = await CodeSubmit.Execute(saveFileName, User.Identity.Name);
-            outputFilePath = Path.Combine(PlatformConfig.SUBMISSION_OUTPUT_DIR, outputFileName);
+            outputFileName = await CodeSubmit.Execute(savedFileName, saveFolderPath, User.Identity.Name);
+            outputFilePath = Path.Combine(saveFolderPath, outputFileName);
 
             using (StreamReader sr = new StreamReader(outputFilePath)) 
             {

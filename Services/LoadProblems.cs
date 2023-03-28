@@ -63,5 +63,7 @@ namespace CodingCompetitionPlatform.Services
         public string name { get; set; }
         public string description { get; set; }
         public int points { get; set; }
+        public int runCases { get; set; }
+        public int testCases { get; set; }
     }
 }

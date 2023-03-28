@@ -5,21 +5,22 @@
 /*    height: 100%;*/
 }
 
-#problem-detail-container {
+#problem-info-container {
     
 }
 
 /* Problem Header */
 #problem-header {
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 #problem-title {
-    font-size: 2.2em;
+    font-size: 2.5em;
     font-weight: 800;
-    align-self: end;
 }
-#problem-detail-index {
-    
+#problem-index {
+    align-self: start;
 }
 
 
@@ -29,4 +30,35 @@
 #problem-detail-description p {
     font-size: 1.2em;
     line-height: 1.7;
+}
+
+/* Code Output */
+.code {
+    background-color: black;
+    padding: 1.5em;
+    border-radius: var(--border-radius);
+    font-family: var(--code-font);
+    white-space: pre-line;
+}
+
+#code-output {
+    margin-top: 2em;
+}
+
+
+/* Code Scoring Result */
+#results-container {
+    background-color: var(--surface-color);
+    padding: 1em;
+    margin-top: 1.5em;
+    border-radius: var(--border-radius);
+}
+#code-report {
+    margin-top: 1em;
+}
+#result-report-tab-bar {
+}
+
+.result-tab-content {
+    display: none;
 }

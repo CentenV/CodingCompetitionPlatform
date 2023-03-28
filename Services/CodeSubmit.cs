@@ -13,7 +13,7 @@ namespace CodingCompetitionPlatform.Services
     public class CodeSubmit
     {
         // Function for Executing the Submitted Code in a Docker Container
-        public static async Task<string> Execute(string fileName, string userid)
+        public static async Task<string> Execute(string fileName, string fileDirectory, string userid)
         {
             string outputFileName = $"{fileName}_OUTPUT.txt";
 
@@ -22,12 +22,13 @@ namespace CodingCompetitionPlatform.Services
             Console.WriteLine("\n" + dockerImageName);
 
             string buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f C:\Users\Administrator\Documents\CODEREPO\playgrounds\docker\python\python.dockerfile --build-arg input_file_name={fileName}";
-            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFileName}";
+            //string runDockerImageCmd = $"docker run --rm {dockerImageName} *> {outputFileName}";      // Powershell
+            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFileName} 2>&1";
             string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
 
-            executeCommand(buildDockerImageCmd);
-            executeCommand(runDockerImageCmd);
-            executeCommand(cleanupDockerImageCmd);
+            executeCommand(buildDockerImageCmd, fileDirectory);
+            executeCommand(runDockerImageCmd, fileDirectory);
+            executeCommand(cleanupDockerImageCmd, fileDirectory);
 
             Console.WriteLine($"\nExecuted {fileName}");
 
@@ -37,10 +38,11 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Internal Methods
-        private static void executeCommand(string command)
+        private static void executeCommand(string command, string workingDir)
         {
-            ProcessStartInfo ps = new ProcessStartInfo(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "/c " + command);
-            ps.WorkingDirectory = PlatformConfig.SUBMISSION_OUTPUT_DIR;
+            //ProcessStartInfo ps = new ProcessStartInfo(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "/c " + command);
+            ProcessStartInfo ps = new ProcessStartInfo(@"C:\Windows\System32\cmd.exe", "/c " + command);
+            ps.WorkingDirectory = workingDir;
             ps.UseShellExecute = false;
             Console.WriteLine(command);
             

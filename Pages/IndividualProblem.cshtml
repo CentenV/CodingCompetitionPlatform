@@ -8,11 +8,15 @@
     var currentProblem = LoadProblems.PROBLEMS[Model.problemIndex - 1];
 }
 
+<!-- PROBLEM INFO AND UPLOAD -->
 <div id="problem-container">
-    <div id="problem-detail-container">
+    <div id="problem-info-container">
         <div id="problem-header">
             <span id="problem-title">@currentProblem.name</span>
-            <span id="problem-detail-index">@currentProblem.problemIndex</span>
+            <div id="problem-details">
+                <div>Problem @currentProblem.problemIndex</div>
+                <div>@currentProblem.runCases run cases, @currentProblem.testCases test cases</div>
+            </div>
         </div>
         <div id="problem-detail-description">
             <p>@currentProblem.description</p>
@@ -29,5 +33,61 @@
 
     <div>@Model.error</div>
 
-    <div>@Model.output</div>
+    <div id="code-output" class="code">@Model.output</div>
+</div>
+
+
+<!-- CODE RESULTS SECTION (whether test case passed or fail) -->
+<div id="results-container">
+    <!-- Code for Results Tabs -->
+    <script>
+        function displayExecutedCase(event, displayName) {
+            // Hide Items
+            tabContent = document.getElementsByClassName("result-tab-content");
+            console.log(tabContent.length);
+            for (let i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+            // Set Active Tab In Bar
+            tabOptions = document.getElementsByClassName("report-tab-option");
+            for (let i = 0; i < tabOptions.length; i++) {
+                tabOptions[i].className = tabOptions[i].className.replace(" active", "");
+            }
+            // Show Items
+            document.getElementById(displayName).style.display = "block";
+            event.currentTarget.className += " active";
+        }
+    </script>
+
+    <div id="code-report">
+        <div id="result-report-tab-bar">
+            @for (int i = 1; i <= currentProblem.runCases; i++)
+            {
+                string contentDisplayName = $"runcase{i}";
+                <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @i</button>
+            }
+            @for (int i = 1; i <= currentProblem.testCases; i++)
+            {
+                string contentDisplayName = $"testcase{i}";
+                <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Test Case @i</button>
+            }
+        </div>
+
+        <div>
+            @for (int i = 1; i <= currentProblem.runCases; i++)
+            {
+                string contentDisplayName = $"runcase{i}";
+                <div class="result-tab-content" id="@contentDisplayName">
+                    <div>Run case @i content</div>
+                </div>
+            }
+            @for (int i = 1; i <= currentProblem.testCases; i++)
+            {
+                string contentDisplayName = $"testcase{i}";
+                <div class="result-tab-content" id="@contentDisplayName">
+                    <div>Test case @i content</div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
