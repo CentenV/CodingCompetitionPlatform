@@ -56,15 +56,6 @@ namespace CodingCompetitionPlatform.Services
                 return "Unknown Difficulty";
             }
         }
-
-        // Read File
-        public static string ReadFile(string filePath)
-        {
-            using (StreamReader sr = new StreamReader(filePath))
-            {
-                return sr.ReadToEnd();
-            }
-        }
     }
 
     public class Problem

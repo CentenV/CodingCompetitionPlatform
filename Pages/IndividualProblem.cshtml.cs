@@ -30,27 +30,28 @@ namespace CodingCompetitionPlatform.Pages
 
             // File Upload: save file into server directory with the naming convention of TEAMID_USERID_PROBLEMNUMBER_TIME.ext
             // identifier (i.e. TEAM1234_TEST1234_1_10-16-07PM)
-            string identifier = identifier = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}";
-            string destinationFolderPath, savedFileName, fullSavedFilePath;
+            string identifier = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}";
+            CompetitionFileIOInfo workingSaveFile, destinationFolderPath;
             try
             {
                 output = "Uploading File...";
                 Console.WriteLine($"Uploaded file: {uploadedFile.FileName}");
-                //string savePath = Path.Combine(@"C:\Users\Administrator\Documents\TEMP", uploadedFile.FileName);
+
                 // !!!!!! Add Team name to file name
                 // Add multiplelanguage support
-                savedFileName = $"{identifier}.py";
-                destinationFolderPath = Path.Combine(PlatformConfig.SUBMISSION_OUTPUT_DIR, identifier);
+                string fileExtension = "py";
+                // TEMP
+                destinationFolderPath = new CompetitionFileIOInfo($@"{PlatformConfig.SUBMISSION_OUTPUT_DIR}\{identifier}", folder: true);
+                workingSaveFile = new CompetitionFileIOInfo($@"{destinationFolderPath.destinationPath}\{identifier}.{fileExtension}");
+                workingSaveFile.identifier = identifier;
 
                 // Create Directory
-                if (!Directory.Exists(destinationFolderPath)) { Directory.CreateDirectory(destinationFolderPath); }
+                if (!Directory.Exists(destinationFolderPath.destinationPath)) { Directory.CreateDirectory(destinationFolderPath.destinationPath); }
 
-                fullSavedFilePath = Path.Combine(destinationFolderPath, savedFileName);
+                Console.WriteLine($"Saved file name: {workingSaveFile.fileName}");
+                Console.WriteLine($"Saved file full path: {workingSaveFile.filePath}");
 
-                Console.WriteLine($"Saved file name: {savedFileName}");
-                Console.WriteLine($"Saved file full path: {fullSavedFilePath}");
-
-                using (FileStream fileStream = new FileStream(fullSavedFilePath, FileMode.Create))
+                using (FileStream fileStream = new FileStream(workingSaveFile.filePath, FileMode.Create))
                 {
                     uploadedFile.CopyTo(fileStream);
                 }
@@ -58,6 +59,7 @@ namespace CodingCompetitionPlatform.Pages
             catch (NullReferenceException)
             {
                 error = "No File Uploaded.";
+
                 return;
             }
             catch (Exception ex)
@@ -74,7 +76,8 @@ namespace CodingCompetitionPlatform.Pages
 
             // Assemble List of Input Test Case File Names and Expected Outputs
             
-            CodeSubmit.Submit(currentProblem, identifier, savedFileName, fullSavedFilePath, destinationFolderPath, User.Identity.Name);
+            List<CompetitionFileIOInfo> codeReady = CodeSubmit.Submit(currentProblem, workingSaveFile, destinationFolderPath, User.Identity.Name);
+            Console.WriteLine("test");
 
             //////////////////
             //outputFileName = await CodeSubmit.Execute(savedFileName, saveFolderPath, User.Identity.Name);

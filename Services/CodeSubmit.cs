@@ -14,52 +14,46 @@ namespace CodingCompetitionPlatform.Services
     }
     public class CodeSubmit
     {
-        // Submission (running all testing and run cases), Returns the dictionary which contains {"path to actual output file", "path to expected output file"}
+        // Submission (running all testing and run cases), Returns the list of all the injected files with the run/test cases that are ready to run
         // (problem context, name of inputted user file, full path to inputted user file, directory of the submitted file folder, userid)
-        public static void Submit(Problem problem, string identifier, string fileName, string fileFullPath, string workingDirectory, string userId)
+        public static List<CompetitionFileIOInfo> Submit(Problem problem, CompetitionFileIOInfo userUploadedCode, CompetitionFileIOInfo outputMergedCodeDirectory, string userId)
         {
             // All needed paths and the directory with the challenge resources
-            string inputCasesPath = @$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}";
+            CompetitionFileIOInfo inputCasesPath = new CompetitionFileIOInfo(@$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}", folder: true);
             string expectedOutputsPath = $@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}";
-            string extension = "py";
 
             // List of all the code ready to be executed
-            List<string> readyCodeToBeExecuted = new List<string>();
+            List<CompetitionFileIOInfo> codeReadyToBeExecuted = new List<CompetitionFileIOInfo>();
 
             // Getting a list of paths to the run cases and test cases files and injecting the run and test case into the user submitted code
-            string[] inputRunCases = new string[problem.runCases];
-            for (int i = 0; i < problem.runCases; i++)
+            for (int i = 0; i < problem.runCases; i++)      // Run Cases
             {
-                // Compile the list of paths for all run cases
-                string caseFileName = $"{problem.problemIndex}_runcase{i}.{extension}";
-                inputRunCases[i] = @$"{inputCasesPath}\{caseFileName}";
-                Console.WriteLine(caseFileName);
-
                 // Inject code into the user's uploaded code
-                string injectorFilePath = $@"{inputCasesPath}\{caseFileName}";
-                string combinedCodeOutputPath = @$"{workingDirectory}\{identifier}_runcase{i}.{extension}";    // Full path and output file name
-                readyCodeToBeExecuted.Add(combinedCodeOutputPath);
-                InjectCaseCode(fileFullPath, injectorFilePath, combinedCodeOutputPath);
+                string runcaseFileName = $"{problem.problemIndex}_runcase{i}.{userUploadedCode.fileExtension}";
+                string injectorFilePath = $@"{inputCasesPath.destinationPath}\{runcaseFileName}";
+                CompetitionFileIOInfo combinedUserRuncaseCode = new CompetitionFileIOInfo(@$"{outputMergedCodeDirectory.destinationPath}\{userUploadedCode.identifier}_runcase{i}.{userUploadedCode.fileExtension}");
+                Console.WriteLine(runcaseFileName);
+                InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserRuncaseCode.filePath);
+                codeReadyToBeExecuted.Add(combinedUserRuncaseCode);
             }
-            string[] inputTestCases = new string[problem.testCases];
-            for (int i = 0; i < problem.testCases; i++)
+            for (int i = 0; i < problem.testCases; i++)     // Test Cases
             {
-                // Compile the list of paths of for all test cases
-                string caseFileName = $"{problem.problemIndex}_testcase{i}.{extension}";
-                inputTestCases[i] = @$"{inputCasesPath}\{caseFileName}";
-                Console.WriteLine(caseFileName);
-
                 // Inject code into the user's uploaded code
-                string injectorFilePath = $@"{inputCasesPath}\{caseFileName}";
-                string combinedCodeOutputPath = @$"{workingDirectory}\{identifier}_testcase{i}.{extension}";    // Full path and output file name
-                readyCodeToBeExecuted.Add(combinedCodeOutputPath);
-                InjectCaseCode(fileFullPath, injectorFilePath, combinedCodeOutputPath);
+                string testcaseFileName = $"{problem.problemIndex}_testcase{i}.{userUploadedCode.fileExtension}";
+                string injectorFilePath = $@"{inputCasesPath.destinationPath}\{testcaseFileName}";
+                CompetitionFileIOInfo combinedUserTestcaseCode = new CompetitionFileIOInfo(@$"{outputMergedCodeDirectory.destinationPath}\{userUploadedCode.identifier}_testcase{i}.{userUploadedCode.fileExtension}");
+                Console.WriteLine(testcaseFileName);
+                InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserTestcaseCode.filePath);
+                codeReadyToBeExecuted.Add(combinedUserTestcaseCode);
             }
 
-            Console.WriteLine(readyCodeToBeExecuted.Count);
+            Console.WriteLine(codeReadyToBeExecuted.Count);
+            return codeReadyToBeExecuted;
         }
 
-        // Function for Executing the Submitted Code in a Docker Container
+
+
+        // Function for Executing Code in a Docker Container
         public static async Task<string> Execute(string fileName, string fileDirectory, string userId)
         {
             // Output File Name
@@ -81,7 +75,6 @@ namespace CodingCompetitionPlatform.Services
 
             return outputFileName;
         }
-
 
 
         // Internal Methods
