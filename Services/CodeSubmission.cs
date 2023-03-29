@@ -12,11 +12,11 @@ namespace CodingCompetitionPlatform.Services
         C,
         CPP,
     }
-    public class CodeSubmit
+    public class CodeSubmission
     {
         // Submission (running all testing and run cases), Returns the list of all the injected files with the run/test cases that are ready to run
         // (problem context, name of inputted user file, full path to inputted user file, directory of the submitted file folder, userid)
-        public static List<CompetitionFileIOInfo> Submit(Problem problem, CompetitionFileIOInfo userUploadedCode, CompetitionFileIOInfo outputMergedCodeDirectory, string userId)
+        public static List<CompetitionFileIOInfo> CreateCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, CompetitionFileIOInfo outputMergedCodeDirectory, string userId)
         {
             // All needed paths and the directory with the challenge resources
             CompetitionFileIOInfo inputCasesPath = new CompetitionFileIOInfo(@$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}", folder: true);

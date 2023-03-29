@@ -76,7 +76,7 @@ namespace CodingCompetitionPlatform.Pages
 
             // Assemble List of Input Test Case File Names and Expected Outputs
             
-            List<CompetitionFileIOInfo> codeReady = CodeSubmit.Submit(currentProblem, workingSaveFile, destinationFolderPath, User.Identity.Name);
+            List<CompetitionFileIOInfo> caseCodeReady = CodeSubmission.CreateCaseFiles(currentProblem, workingSaveFile, destinationFolderPath, User.Identity.Name);
             Console.WriteLine("test");
 
             //////////////////
