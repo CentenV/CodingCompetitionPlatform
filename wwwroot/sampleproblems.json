@@ -2,11 +2,11 @@
   {
     "problemIndex": 1,
     "difficulty": "easy",
-    "name": "Odd or Return",
-    "description": "Write a function that will take in the length of a word and add a space to the string if it is odd, and if it is even return it. (pass the word hi or odd into the function written)",
+    "name": "Calculator",
+    "description": "Two number calculator",
     "points": 10,
     "runCases": 2,
-    "testCases": 5
+    "testCases": 4
   },
   {
     "problemIndex": 2,

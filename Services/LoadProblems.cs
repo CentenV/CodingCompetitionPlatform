@@ -9,6 +9,7 @@ namespace CodingCompetitionPlatform.Services
         public static Problem[]? PROBLEMS { get; set; }
         public static int? NUMBEROFPROBLEMS { get; set; }
 
+        // Read Problems From .json File
         public static void Initialize()
         {
             if (!LoadProblems.initialized)
@@ -34,6 +35,7 @@ namespace CodingCompetitionPlatform.Services
             }
         }
 
+        // Convert Title (i.e. "easy" => "Easy")
         public static string ConvertTitle(string initialTitle)
         {
             // Capitalizes the first letter of the difficulty
@@ -52,6 +54,15 @@ namespace CodingCompetitionPlatform.Services
             else
             {
                 return "Unknown Difficulty";
+            }
+        }
+
+        // Read File
+        public static string ReadFile(string filePath)
+        {
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                return sr.ReadToEnd();
             }
         }
     }
