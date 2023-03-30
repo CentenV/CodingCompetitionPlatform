@@ -117,7 +117,7 @@ namespace CodingCompetitionPlatform.Services
                 }
                 else
                 {
-                    directoryPath = path.Substring(0, i);
+                    directoryPath = path.Substring(0, i-1);
                 }
             }
             return directoryPath;

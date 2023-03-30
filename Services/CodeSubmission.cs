@@ -12,21 +12,28 @@ namespace CodingCompetitionPlatform.Services
         C,
         CPP,
     }
+
+    // Enum to help with determining whether test or run case type
+    public enum CaseType
+    {
+        Run,
+        Test
+    }
+
     public class CodeSubmission
     {
         // Creating Case Files (injecting all testing and run cases), Returns the list of all the injected files
         // (problem context, inputted user file and its respective data, userid)
-        public static List<CompetitionFileIOInfo> CreateCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, string userId)
+        public static List<CompetitionFileIOInfo> RunCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, string userId)
         {
             // All needed paths and the directory with the challenge resources
             CompetitionFileIOInfo inputCasesPath = new CompetitionFileIOInfo(@$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}", folder: true);
-            string expectedOutputsPath = $@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}";
 
             // List of all the code ready to be executed
             List<CompetitionFileIOInfo> codeReadyToBeExecuted = new List<CompetitionFileIOInfo>();
 
-            // Getting a list of paths to the run cases and test cases files and injecting the run and test case into the user submitted code
-            for (int i = 0; i < problem.runCases; i++)      // Run Cases
+            // Run Case Files
+            for (int i = 0; i < problem.runCases; i++)
             {
                 // Inject code into the user's uploaded code
                 string runcaseFileName = $"{problem.problemIndex}_runcase{i}.{userUploadedCode.fileExtension}";
@@ -34,8 +41,23 @@ namespace CodingCompetitionPlatform.Services
                 CompetitionFileIOInfo combinedUserRuncaseCode = new CompetitionFileIOInfo(@$"{userUploadedCode.fileDirectory}\{userUploadedCode.identifier}_runcase{i}.{userUploadedCode.fileExtension}");
                 Console.WriteLine(runcaseFileName);
                 InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserRuncaseCode.filePath);
+
+                combinedUserRuncaseCode.identifier = userUploadedCode.identifier;
                 codeReadyToBeExecuted.Add(combinedUserRuncaseCode);
             }
+
+            Console.WriteLine("Number of run case files: " + codeReadyToBeExecuted.Count);
+            return codeReadyToBeExecuted;
+        }
+        public static List<CompetitionFileIOInfo> TestCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, string userId)
+        {
+            // All needed paths and the directory with the challenge resources
+            CompetitionFileIOInfo inputCasesPath = new CompetitionFileIOInfo(@$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}", folder: true);
+
+            // List of all the code ready to be executed
+            List<CompetitionFileIOInfo> codeReadyToBeExecuted = new List<CompetitionFileIOInfo>();
+
+            // Test Case Files
             for (int i = 0; i < problem.testCases; i++)     // Test Cases
             {
                 // Inject code into the user's uploaded code
@@ -44,41 +66,82 @@ namespace CodingCompetitionPlatform.Services
                 CompetitionFileIOInfo combinedUserTestcaseCode = new CompetitionFileIOInfo(@$"{userUploadedCode.fileDirectory}\{userUploadedCode.identifier}_testcase{i}.{userUploadedCode.fileExtension}");
                 Console.WriteLine(testcaseFileName);
                 InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserTestcaseCode.filePath);
+
+                combinedUserTestcaseCode.identifier = userUploadedCode.identifier;
                 codeReadyToBeExecuted.Add(combinedUserTestcaseCode);
             }
 
-            Console.WriteLine(codeReadyToBeExecuted.Count);
+            Console.WriteLine("Number of test case files: " + codeReadyToBeExecuted.Count);
             return codeReadyToBeExecuted;
         }
 
-        // Executing All Code Cases (running all testing and run cases), Returns 
-        public static async Task ExecuteAllCases(List<CompetitionFileIOInfo> cases, string userId)
+
+        // Executing All Code Cases (running all testing and run cases), Returns a dictionary with file data in it
+        // Returns { Run : [ { "outputted file ", "expected output" }, ... ], Test : [ { "outputted file ", "expected output" }, ... ] }
+        public static async Task<List<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>>> ExecuteCases(List<CompetitionFileIOInfo> cases, Problem problem, CaseType caseType, string userId)
         {
-            List<Task<string>> executionTasks = new List<Task<string>>();
+            // Execute all files in the cases list
+            List<Task<CompetitionFileIOInfo>> executionTasks = new List<Task<CompetitionFileIOInfo>>();
             foreach (CompetitionFileIOInfo file in cases)
             {
-                executionTasks.Add(Execute(file, userId));
+                executionTasks.Add(Task<CompetitionFileIOInfo>.Run(() => Execute(file, userId)));
+                //Execute(file, userId);
             }
-
             await Task.WhenAll(executionTasks);
 
             Console.WriteLine(executionTasks.Count);
+
+            // Return the files of the outputs of the cases
+            var finalOutputs = new List<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>>();
+
+            if (executionTasks.Count != cases.Count) { throw new PlatformInternalException("Internal Error, Task count and cases count do not match in the ExecuteCases() function"); }
+
+            int numberOfCases;
+            if (caseType == CaseType.Run)
+            {
+                for (int i = 0; i < problem.runCases; i++)
+                {
+                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_runcase{i}_EO.{cases[i].fileExtension}");
+
+                    finalOutputs.Add(new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>()
+                    {
+                        {executionTasks[i].Result, expectedOutput}
+                    });
+                }
+            }
+            else if (caseType == CaseType.Test) 
+            {
+                for (int i = 0; i < problem.testCases; i++)
+                {
+                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_testcase{i}_EO.{cases[i].fileExtension}");
+
+                    finalOutputs.Add(new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>()
+                    {
+                        {executionTasks[i].Result, expectedOutput}
+                    });
+                }
+            }
+
+            return finalOutputs;
         }
+
+
 
 
 
         // Function for Executing Code in a Docker Container
-        private static async Task<string> Execute(CompetitionFileIOInfo inputFile, string userId)
+        private static async Task<CompetitionFileIOInfo> Execute(CompetitionFileIOInfo inputFile, string userId)
         {
             // Output File Name
-            string outputFileName = $"_{inputFile.fileName}_OUTPUT.txt";
+            CompetitionFileIOInfo outputFile = new CompetitionFileIOInfo(inputFile.fileDirectory + $@"\_{inputFile.identifier}_OUTPUT.txt");
+            outputFile.identifier = inputFile.identifier;
 
             // Name of the Docker Image (language:userid). Docker image name cannot contain numbers and can only be lowercase
-            string dockerImageName = "python:" + "test";
+            string dockerImageName = $"python:{inputFile.fileName}";
             Console.WriteLine("\n" + dockerImageName);
 
             string buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\python.dockerfile --build-arg input_file_name={inputFile.fileName}";
-            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFileName} 2>&1";
+            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFile.fileName} 2>&1";
             string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
 
             ExecuteCommand(buildDockerImageCmd, inputFile.fileDirectory);
@@ -87,9 +150,8 @@ namespace CodingCompetitionPlatform.Services
 
             Console.WriteLine($"\nExecuted {inputFile.fileName}");
 
-            return outputFileName;
+            return outputFile;
         }
-
 
         // Internal Methods
         private static void ExecuteCommand(string command, string workingDir)

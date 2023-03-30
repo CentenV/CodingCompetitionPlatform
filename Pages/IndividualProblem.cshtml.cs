@@ -1,4 +1,4 @@
-using CodingCompetitionPlatform.Services;
+﻿using CodingCompetitionPlatform.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,12 +16,12 @@ namespace CodingCompetitionPlatform.Pages
 
         [BindProperty]
         public IFormFile? uploadedFile { get; set; }
-        public string output { get; set; }
+        public string status { get; set; }
         public string? error { get; set; }
 
         public void OnGet()
         {
-            output = "No file submitted.";
+            status = "No file submitted.";
         }
 
         public async Task OnPostAsync()
@@ -34,7 +34,7 @@ namespace CodingCompetitionPlatform.Pages
             CompetitionFileIOInfo workingSaveFile, destinationFolderPath;
             try
             {
-                output = "Uploading File...";
+                status = "Uploading File... ";
                 Console.WriteLine($"Uploaded file: {uploadedFile.FileName}");
 
                 // !!!!!! Add Team name to file name
@@ -58,7 +58,7 @@ namespace CodingCompetitionPlatform.Pages
             }
             catch (NullReferenceException)
             {
-                error = "No File Uploaded.";
+                status = "\nNo File Uploaded. ❌";
 
                 return;
             }
@@ -66,16 +66,19 @@ namespace CodingCompetitionPlatform.Pages
             {
                 Console.WriteLine(ex);
                 error = ex.GetType().ToString();
+                status += "File Upload Failed. ❌";
                 return;
             }
 
 
             // Execute File and Read Output Back Out
-            output += "\nExecuting code...";
+            status += "\nExecuting code... ";
             
             // Create and inject all the run and test cases, get the list of all the paths to those files
-            List<CompetitionFileIOInfo> caseCodeReady = CodeSubmission.CreateCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
-            CodeSubmission.ExecuteAllCases(caseCodeReady, User.Identity.Name);
+            List<CompetitionFileIOInfo> runcaseCodeReady = CodeSubmission.RunCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
+            List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
+            var runcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Run, User.Identity.Name);
+            var testcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
             Console.WriteLine("test");
 
             //////////////////

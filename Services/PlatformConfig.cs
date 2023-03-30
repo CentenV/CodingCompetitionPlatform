@@ -11,4 +11,9 @@
         public static readonly string INPUTCASES_DIR = @"C:\Users\Administrator\Documents\CODEREPO\CodingCompetitionPlatform\wwwroot\challengeresources\inputcases";
         public static readonly string EXPECTEDOUTPUTS_DIR = @"C:\Users\Administrator\Documents\CODEREPO\CodingCompetitionPlatform\wwwroot\challengeresources\expectedoutputs";
     }
+
+    public class PlatformInternalException : Exception
+    {
+        public PlatformInternalException(string message) : base(message) { }
+    }
 }
