@@ -14,9 +14,9 @@ namespace CodingCompetitionPlatform.Services
     }
     public class CodeSubmission
     {
-        // Submission (running all testing and run cases), Returns the list of all the injected files with the run/test cases that are ready to run
-        // (problem context, name of inputted user file, full path to inputted user file, directory of the submitted file folder, userid)
-        public static List<CompetitionFileIOInfo> CreateCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, CompetitionFileIOInfo outputMergedCodeDirectory, string userId)
+        // Creating Case Files (injecting all testing and run cases), Returns the list of all the injected files
+        // (problem context, inputted user file and its respective data, userid)
+        public static List<CompetitionFileIOInfo> CreateCaseFiles(Problem problem, CompetitionFileIOInfo userUploadedCode, string userId)
         {
             // All needed paths and the directory with the challenge resources
             CompetitionFileIOInfo inputCasesPath = new CompetitionFileIOInfo(@$"{PlatformConfig.INPUTCASES_DIR}\{problem.problemIndex}", folder: true);
@@ -31,7 +31,7 @@ namespace CodingCompetitionPlatform.Services
                 // Inject code into the user's uploaded code
                 string runcaseFileName = $"{problem.problemIndex}_runcase{i}.{userUploadedCode.fileExtension}";
                 string injectorFilePath = $@"{inputCasesPath.destinationPath}\{runcaseFileName}";
-                CompetitionFileIOInfo combinedUserRuncaseCode = new CompetitionFileIOInfo(@$"{outputMergedCodeDirectory.destinationPath}\{userUploadedCode.identifier}_runcase{i}.{userUploadedCode.fileExtension}");
+                CompetitionFileIOInfo combinedUserRuncaseCode = new CompetitionFileIOInfo(@$"{userUploadedCode.fileDirectory}\{userUploadedCode.identifier}_runcase{i}.{userUploadedCode.fileExtension}");
                 Console.WriteLine(runcaseFileName);
                 InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserRuncaseCode.filePath);
                 codeReadyToBeExecuted.Add(combinedUserRuncaseCode);
@@ -41,7 +41,7 @@ namespace CodingCompetitionPlatform.Services
                 // Inject code into the user's uploaded code
                 string testcaseFileName = $"{problem.problemIndex}_testcase{i}.{userUploadedCode.fileExtension}";
                 string injectorFilePath = $@"{inputCasesPath.destinationPath}\{testcaseFileName}";
-                CompetitionFileIOInfo combinedUserTestcaseCode = new CompetitionFileIOInfo(@$"{outputMergedCodeDirectory.destinationPath}\{userUploadedCode.identifier}_testcase{i}.{userUploadedCode.fileExtension}");
+                CompetitionFileIOInfo combinedUserTestcaseCode = new CompetitionFileIOInfo(@$"{userUploadedCode.fileDirectory}\{userUploadedCode.identifier}_testcase{i}.{userUploadedCode.fileExtension}");
                 Console.WriteLine(testcaseFileName);
                 InjectCaseCode(userUploadedCode.filePath, injectorFilePath, combinedUserTestcaseCode.filePath);
                 codeReadyToBeExecuted.Add(combinedUserTestcaseCode);
@@ -51,27 +51,41 @@ namespace CodingCompetitionPlatform.Services
             return codeReadyToBeExecuted;
         }
 
+        // Executing All Code Cases (running all testing and run cases), Returns 
+        public static async Task ExecuteAllCases(List<CompetitionFileIOInfo> cases, string userId)
+        {
+            List<Task<string>> executionTasks = new List<Task<string>>();
+            foreach (CompetitionFileIOInfo file in cases)
+            {
+                executionTasks.Add(Execute(file, userId));
+            }
+
+            await Task.WhenAll(executionTasks);
+
+            Console.WriteLine(executionTasks.Count);
+        }
+
 
 
         // Function for Executing Code in a Docker Container
-        public static async Task<string> Execute(string fileName, string fileDirectory, string userId)
+        private static async Task<string> Execute(CompetitionFileIOInfo inputFile, string userId)
         {
             // Output File Name
-            string outputFileName = $"{fileName}_OUTPUT.txt";
+            string outputFileName = $"_{inputFile.fileName}_OUTPUT.txt";
 
             // Name of the Docker Image (language:userid). Docker image name cannot contain numbers and can only be lowercase
-            string dockerImageName = "python:" + userId;
+            string dockerImageName = "python:" + "test";
             Console.WriteLine("\n" + dockerImageName);
 
-            string buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\python.dockerfile --build-arg input_file_name={fileName}";
+            string buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\python.dockerfile --build-arg input_file_name={inputFile.fileName}";
             string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFileName} 2>&1";
             string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
 
-            ExecuteCommand(buildDockerImageCmd, fileDirectory);
-            ExecuteCommand(runDockerImageCmd, fileDirectory);
-            ExecuteCommand(cleanupDockerImageCmd, fileDirectory);
+            ExecuteCommand(buildDockerImageCmd, inputFile.fileDirectory);
+            ExecuteCommand(runDockerImageCmd, inputFile.fileDirectory);
+            ExecuteCommand(cleanupDockerImageCmd, inputFile.fileDirectory);
 
-            Console.WriteLine($"\nExecuted {fileName}");
+            Console.WriteLine($"\nExecuted {inputFile.fileName}");
 
             return outputFileName;
         }

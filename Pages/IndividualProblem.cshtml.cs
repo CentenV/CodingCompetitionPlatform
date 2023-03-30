@@ -72,11 +72,10 @@ namespace CodingCompetitionPlatform.Pages
 
             // Execute File and Read Output Back Out
             output += "\nExecuting code...";
-            string outputFileName, outputFilePath;
-
-            // Assemble List of Input Test Case File Names and Expected Outputs
             
-            List<CompetitionFileIOInfo> caseCodeReady = CodeSubmission.CreateCaseFiles(currentProblem, workingSaveFile, destinationFolderPath, User.Identity.Name);
+            // Create and inject all the run and test cases, get the list of all the paths to those files
+            List<CompetitionFileIOInfo> caseCodeReady = CodeSubmission.CreateCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
+            CodeSubmission.ExecuteAllCases(caseCodeReady, User.Identity.Name);
             Console.WriteLine("test");
 
             //////////////////
