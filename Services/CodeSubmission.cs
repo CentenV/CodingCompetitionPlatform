@@ -77,8 +77,8 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Executing All Code Cases (running all testing and run cases), Returns a dictionary with file data in it
-        // Returns { Run : [ { "outputted file ", "expected output" }, ... ], Test : [ { "outputted file ", "expected output" }, ... ] }
-        public static async Task<List<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>>> ExecuteCases(List<CompetitionFileIOInfo> cases, Problem problem, CaseType caseType, string userId)
+        // returns [{ "actual outputted file info", "expected output file info" }, ... ]
+        public static async Task<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>> ExecuteCases(List<CompetitionFileIOInfo> cases, Problem problem, CaseType caseType, string userId)
         {
             // Execute all files in the cases list
             List<Task<CompetitionFileIOInfo>> executionTasks = new List<Task<CompetitionFileIOInfo>>();
@@ -92,8 +92,7 @@ namespace CodingCompetitionPlatform.Services
             Console.WriteLine(executionTasks.Count);
 
             // Return the files of the outputs of the cases
-            var finalOutputs = new List<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>>();
-
+            var finalOutputs = new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>();
             if (executionTasks.Count != cases.Count) { throw new PlatformInternalException("Internal Error, Task count and cases count do not match in the ExecuteCases() function"); }
 
             int numberOfCases;
@@ -101,28 +100,39 @@ namespace CodingCompetitionPlatform.Services
             {
                 for (int i = 0; i < problem.runCases; i++)
                 {
-                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_runcase{i}_EO.{cases[i].fileExtension}");
+                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_runcase{i}_EO.txt");
 
-                    finalOutputs.Add(new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>()
-                    {
-                        {executionTasks[i].Result, expectedOutput}
-                    });
+                    finalOutputs.Add(executionTasks[i].Result, expectedOutput);
                 }
             }
             else if (caseType == CaseType.Test) 
             {
                 for (int i = 0; i < problem.testCases; i++)
                 {
-                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_testcase{i}_EO.{cases[i].fileExtension}");
+                    CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_testcase{i}_EO.txt");
 
-                    finalOutputs.Add(new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>()
-                    {
-                        {executionTasks[i].Result, expectedOutput}
-                    });
+                    finalOutputs.Add(executionTasks[i].Result, expectedOutput);
                 }
             }
 
             return finalOutputs;
+        }
+
+
+        // Displaying All The Executed Code to the Page, Returns a dictionary containing the output
+        // returns [{ "outputted file content", "expected output file content" }]
+        public static Dictionary<string, string> GetActualExpectedOutput(Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo> actualexpectedFiles)
+        {
+            var content = new Dictionary<string, string>();
+
+            foreach (var file in actualexpectedFiles) 
+            {
+                string actualOutputContent = ReadFile(file.Key.filePath);
+                string expectedOutputContent = ReadFile(file.Value.filePath);
+                content.Add(actualOutputContent, expectedOutputContent);
+            }
+
+            return content;
         }
 
 
@@ -133,7 +143,7 @@ namespace CodingCompetitionPlatform.Services
         private static async Task<CompetitionFileIOInfo> Execute(CompetitionFileIOInfo inputFile, string userId)
         {
             // Output File Name
-            CompetitionFileIOInfo outputFile = new CompetitionFileIOInfo(inputFile.fileDirectory + $@"\_{inputFile.identifier}_OUTPUT.txt");
+            CompetitionFileIOInfo outputFile = new CompetitionFileIOInfo(inputFile.fileDirectory + $@"\_{inputFile.fileName}_OUTPUT.txt");
             outputFile.identifier = inputFile.identifier;
 
             // Name of the Docker Image (language:userid). Docker image name cannot contain numbers and can only be lowercase
@@ -184,6 +194,14 @@ namespace CodingCompetitionPlatform.Services
             using (StreamWriter sw = new StreamWriter(destinationFile))
             {
                 sw.WriteLine(receivingFile + "\n\n\n\n" + injectFile);
+            }
+        }
+
+        private static string ReadFile(string filePath)
+        {
+            using (StreamReader sr = new StreamReader(filePath)) 
+            {
+                return sr.ReadToEnd();
             }
         }
     }

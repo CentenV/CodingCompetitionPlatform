@@ -85,6 +85,7 @@ namespace CodingCompetitionPlatform.Services
         }
 
 
+
         // INTERNAL METHODS //
 
         // Gets the last section (subpath) of the path

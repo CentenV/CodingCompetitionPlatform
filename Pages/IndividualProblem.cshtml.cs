@@ -18,10 +18,17 @@ namespace CodingCompetitionPlatform.Pages
         public IFormFile? uploadedFile { get; set; }
         public string status { get; set; }
         public string? error { get; set; }
+        public bool displayCasesStatus { get; set; }
+
+        // Displaying the Run/Test Cases and the Actual/Expected Output
+        public Dictionary<string, string> runCasesActualExpected { get; set; }
+        public Dictionary<string, string> testCasesActualExpected { get; set; }
+
 
         public void OnGet()
         {
             status = "No file submitted.";
+            displayCasesStatus = false;
         }
 
         public async Task OnPostAsync()
@@ -78,8 +85,13 @@ namespace CodingCompetitionPlatform.Pages
             List<CompetitionFileIOInfo> runcaseCodeReady = CodeSubmission.RunCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
             List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
             var runcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Run, User.Identity.Name);
-            var testcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
-            Console.WriteLine("test");
+            var testcaseOutput = await CodeSubmission.ExecuteCases(testcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
+
+            runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput);
+            testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput);
+
+            displayCasesStatus = true;
+
 
             //////////////////
             //outputFileName = await CodeSubmit.Execute(savedFileName, saveFolderPath, User.Identity.Name);

@@ -38,56 +38,49 @@
 
 
 <!-- CODE RESULTS SECTION (whether test case passed or fail) -->
-<div id="results-container">
-    <!-- Code for Results Tabs -->
-    <script>
-        function displayExecutedCase(event, displayName) {
-            // Hide Items
-            tabContent = document.getElementsByClassName("result-tab-content");
-            console.log(tabContent.length);
-            for (let i = 0; i < tabContent.length; i++) {
-                tabContent[i].style.display = "none";
+@if (Model.displayCasesStatus && (Model.runCasesActualExpected != null) && (Model.testCasesActualExpected != null))
+{
+    <div id="results-container">
+        <!-- Code for Results Tabs -->
+        <script>
+            function displayExecutedCase(event, displayName) {
+                // Hide Items
+                tabContent = document.getElementsByClassName("result-tab-content");
+                console.log(tabContent.length);
+                for (let i = 0; i < tabContent.length; i++) {
+                    tabContent[i].style.display = "none";
+                }
+                // Set Active Tab In Bar
+                tabOptions = document.getElementsByClassName("report-tab-option");
+                for (let i = 0; i < tabOptions.length; i++) {
+                    tabOptions[i].className = tabOptions[i].className.replace(" active", "");
+                }
+                // Show Items
+                document.getElementById(displayName).style.display = "block";
+                event.currentTarget.className += " active";
             }
-            // Set Active Tab In Bar
-            tabOptions = document.getElementsByClassName("report-tab-option");
-            for (let i = 0; i < tabOptions.length; i++) {
-                tabOptions[i].className = tabOptions[i].className.replace(" active", "");
-            }
-            // Show Items
-            document.getElementById(displayName).style.display = "block";
-            event.currentTarget.className += " active";
-        }
-    </script>
+        </script>
 
-    <div id="code-report">
-        <div id="result-report-tab-bar">
-            @for (int i = 1; i <= currentProblem.runCases; i++)
-            {
-                string contentDisplayName = $"runcase{i}";
-                <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @i</button>
-            }
-            @for (int i = 1; i <= currentProblem.testCases; i++)
-            {
-                string contentDisplayName = $"testcase{i}";
-                <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Test Case @i</button>
-            }
-        </div>
+        <div id="code-report">
+            <div id="result-report-tab-bar">
+                @for (int i = 0; i < currentProblem.runCases; i++)
+                {
+                    string contentDisplayName = $"runcase{i + 1}";
+                    <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @(i + 1)</button>
+                }
+            </div>
 
-        <div>
-            @for (int i = 1; i <= currentProblem.runCases; i++)
-            {
-                string contentDisplayName = $"runcase{i}";
-                <div class="result-tab-content" id="@contentDisplayName">
-                    <div>Run case @i content</div>
-                </div>
-            }
-            @for (int i = 1; i <= currentProblem.testCases; i++)
-            {
-                string contentDisplayName = $"testcase{i}";
-                <div class="result-tab-content" id="@contentDisplayName">
-                    <div>Test case @i content</div>
-                </div>
-            }
+            <div>
+                @for (int i = 0; i < currentProblem.runCases; i++)
+                {
+                    string contentDisplayName = $"runcase{i + 1}";
+                    <div class="result-tab-content" id="@contentDisplayName">
+                        <div>Run case @(i + 1) content</div>
+                        <div class="code">@Model.runCasesActualExpected.ElementAt(i).Key</div>
+                        <div class="code">@Model.runCasesActualExpected.ElementAt(i).Value</div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
+}
