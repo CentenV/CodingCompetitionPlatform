@@ -4,7 +4,6 @@
 @{
     // Making sure that problems are initialized
     LoadProblems.Initialize();
-
     var currentProblem = LoadProblems.PROBLEMS[Model.problemIndex - 1];
 }
 
@@ -38,7 +37,7 @@
 
 
 <!-- CODE RESULTS SECTION (whether test case passed or fail) -->
-@if (Model.displayCasesStatus && (Model.runCasesActualExpected != null) && (Model.testCasesActualExpected != null))
+@if (Model.displayCasesStatus && (Model.runCasesAllOutput != null) && (Model.testCasesAllOutput != null))
 {
     <div id="results-container">
         <!-- Code for Results Tabs -->
@@ -62,22 +61,80 @@
         </script>
 
         <div id="code-report">
+            <!-- Initialize Case Header Selection -->
             <div id="result-report-tab-bar">
                 @for (int i = 0; i < currentProblem.runCases; i++)
                 {
                     string contentDisplayName = $"runcase{i + 1}";
-                    <button class="report-tab-option" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @(i + 1)</button>
+                    @if (Model.runCasesAllOutput.ElementAt(i).Value == true)
+                    {
+                        <button class="report-tab-option problem-passed" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @(i + 1)</button>
+                    }
+                    else
+                    {
+                        <button class="report-tab-option problem-failed" onclick="displayExecutedCase(event, '@contentDisplayName')">Run Case @(i + 1)</button>
+                    }
+                }
+                @for (int i = 0; i < currentProblem.testCases; i++)
+                {
+                    string contentDisplayName = $"testcase{i + 1}";
+                    @if (Model.testCasesAllOutput.ElementAt(i).Value == true)
+                    {
+                        <button class="report-tab-option problem-passed" onclick="displayExecutedCase(event, '@contentDisplayName')">Test Case @(i + 1)</button>
+                    }
+                    else
+                    {
+                        <button class="report-tab-option problem-failed" onclick="displayExecutedCase(event, '@contentDisplayName')">Test Case @(i + 1)</button>
+                    }
                 }
             </div>
 
-            <div>
+            <!-- Case Content -->
+            <div id="result-output-content">
                 @for (int i = 0; i < currentProblem.runCases; i++)
                 {
                     string contentDisplayName = $"runcase{i + 1}";
                     <div class="result-tab-content" id="@contentDisplayName">
-                        <div>Run case @(i + 1) content</div>
-                        <div class="code">@Model.runCasesActualExpected.ElementAt(i).Key</div>
-                        <div class="code">@Model.runCasesActualExpected.ElementAt(i).Value</div>
+                        @if (Model.runCasesAllOutput.ElementAt(i).Value == true)
+                        {
+                            <div class="status-text passed">Run Case PASSED</div>
+                        }
+                        else
+                        {
+                            <div class="status-text failed">Run Case FAILED</div>
+                        }
+                        <div class="actual-output-container">
+                            <span class="output-tag">Actual Output</span>
+                            <div class="code runcase-expected-output">@Model.runCasesAllOutput.ElementAt(i).Key.Key</div>
+                        </div>
+                        <div class="expected-output-container">
+                            <span class="output-tag">Expected Output</span>
+                            <div class="code testcase-expected-output">@Model.runCasesAllOutput.ElementAt(i).Key.Value</div>
+                        </div>
+                        <div class="case-identifier">Run Case @(i + 1)</div>
+                    </div>
+                }
+                @for (int i = 0; i < currentProblem.testCases; i++)
+                {
+                    string contentDisplayName = $"testcase{i + 1}";
+                    <div class="result-tab-content" id="@contentDisplayName">
+                        @if (Model.testCasesAllOutput.ElementAt(i).Value == true)
+                        {
+                            <div class="status-text passed">Test Case PASSED</div>
+                        }
+                        else
+                        {
+                            <div class="status-text failed">Test Case FAILED</div>
+                        }
+                        <div class="actual-output-container">
+                            <span class="output-tag">Actual Output</span>
+                            <div class="code runcase-expected-output">@Model.testCasesAllOutput.ElementAt(i).Key.Key</div>
+                        </div>
+                        <div class="expected-output-container">
+                            <span class="output-tag">Expected Output</span>
+                            <div class="code testcase-expected-output">@Model.testCasesAllOutput.ElementAt(i).Key.Value</div>
+                        </div>
+                        <div class="case-identifier">Test Case @(i + 1)</div>
                     </div>
                 }
             </div>

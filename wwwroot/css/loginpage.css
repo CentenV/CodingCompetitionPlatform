@@ -1,15 +1,14 @@
-﻿body {
-    height: 96%;
-}
-
-#login-container {
+﻿#login-container {
     width: auto;
     height: auto;
 }
 #login-content {
     display: grid;
     grid-template-columns: 1fr 1em 1fr;
+    justify-content: center;
+    align-content: center;
     width: auto;
+    height: 55vh;
 }
 
 
@@ -23,12 +22,32 @@
 #banner-image {
     width: 75vw;
     border-radius: var(--border-radius);
-}
+} 
 
 
 #login {
     grid-column: 1;
+    align-self: center;
+    justify-self: center;
 }
+
+#loginButton {
+    padding: 0.8em;
+    padding-left: 2em;
+    padding-right: 2em;
+    font-size: 1.2em;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    border: 0.2em solid white;
+}
+#loginButton:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+    border: 0.2em solid white;
+}
+
 
 /* Text Field */
 #competition-id-field {

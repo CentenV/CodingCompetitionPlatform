@@ -5,11 +5,12 @@
 /*    height: 100%;*/
 }
 
+
+/* PROBLEM INFO */
 #problem-info-container {
     
 }
 
-/* Problem Header */
 #problem-header {
     display: flex;
     flex-direction: row;
@@ -35,7 +36,8 @@
 /* Code Output */
 .code {
     background-color: black;
-    padding: 1.5em;
+    padding-left: 1.5em;
+    padding: 1.2em;
     border-radius: var(--border-radius);
     font-family: var(--code-font);
     white-space: pre-line;
@@ -46,19 +48,92 @@
 }
 
 
-/* Code Scoring Result */
-#results-container {
-    background-color: var(--surface-color);
+/* CODE SCORING RESULT SECTION */
+/* Tabs */
+.report-tab-option {
+    background-color: inherit;
+    font-size: 1em;
+    font-weight: 600;
     padding: 1em;
+    border: none;
+    border-top: 0.2em solid white;
+}
+.report-tab-option:hover {
+    background-color: var(--surface-color);
+}
+.report-tab-option.active {
+    background-color: var(--surface-color);
+}
+.report-tab-option.problem-passed {
+    color: green;
+}
+.report-tab-option.problem-passed.active {
+    color: green;
+    border-top: 0.2em solid green;
+}
+.report-tab-option.problem-failed {
+    color: red;
+}
+.report-tab-option.problem-failed.active {
+    color: red;
+    border-top: 0.2em solid red;
+}
+
+/* Displaying Output */
+#results-container {
+    padding-bottom: 0em;
     margin-top: 1.5em;
-    border-radius: var(--border-radius);
+    margin-bottom: 2em;
 }
 #code-report {
     margin-top: 1em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+}
+#result-output-content {
+    background-color: var(--surface-color);
 }
 #result-report-tab-bar {
+    background-color: var(--background-color);
 }
-
+/* Content */
 .result-tab-content {
     display: none;
+    padding: 2em;
+}
+/* Status of Code */
+.status-text {
+    margin-bottom: 1em;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+.status-text.passed {
+    color: green;
+}
+.status-text.failed {
+    color: red;
+}
+
+
+.actual-output-container {
+/*    margin-top: 1em;*/
+}
+.expected-output-container {
+    margin-top: 2em;
+}
+
+.output-tag {
+    margin-bottom: 0.5em;
+}
+.case-identifier {
+    text-align: right;
+    margin-top: 1em;
+    color: grey;
+}
+
+.runcase-expected-output {
+}
+.testcase-expected-output {
 }

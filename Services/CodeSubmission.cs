@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Npgsql;
+using System.Diagnostics;
 
 // CODE SUBMIT //
 // Class for submitting the code
@@ -136,6 +137,26 @@ namespace CodingCompetitionPlatform.Services
         }
 
 
+        // Determining Whether The Code Is Correct/Incorrect
+        // returns true/false as a third 
+        public static Dictionary<KeyValuePair<string, string>, bool> GetPassFailChallenge(Dictionary<string, string> actualexpectedOutput)
+        {
+            var gradedOutputs = new Dictionary<KeyValuePair<string, string>, bool>();
+
+            foreach (var actualexpected in actualexpectedOutput)
+            {
+                if (actualexpected.Key == actualexpected.Value) 
+                {
+                    gradedOutputs.Add(actualexpected, true);
+                }
+                else
+                {
+                    gradedOutputs.Add(actualexpected, false);
+                }
+            }
+
+            return gradedOutputs;
+        }
 
 
 

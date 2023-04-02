@@ -21,8 +21,8 @@ namespace CodingCompetitionPlatform.Pages
         public bool displayCasesStatus { get; set; }
 
         // Displaying the Run/Test Cases and the Actual/Expected Output
-        public Dictionary<string, string> runCasesActualExpected { get; set; }
-        public Dictionary<string, string> testCasesActualExpected { get; set; }
+        public Dictionary<KeyValuePair<string, string>, bool> runCasesAllOutput { get; set; }
+        public Dictionary<KeyValuePair<string, string>, bool> testCasesAllOutput { get; set; }
 
 
         public void OnGet()
@@ -33,6 +33,7 @@ namespace CodingCompetitionPlatform.Pages
 
         public async Task OnPostAsync()
         {
+            LoadProblems.Initialize();
             var currentProblem = LoadProblems.PROBLEMS[problemIndex - 1];
 
             // File Upload: save file into server directory with the naming convention of TEAMID_USERID_PROBLEMNUMBER_TIME.ext
@@ -87,8 +88,11 @@ namespace CodingCompetitionPlatform.Pages
             var runcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Run, User.Identity.Name);
             var testcaseOutput = await CodeSubmission.ExecuteCases(testcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
 
-            runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput);
-            testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput);
+            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput);
+            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput);
+
+            runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
+            testCasesAllOutput = CodeSubmission.GetPassFailChallenge(testCasesActualExpected);
 
             displayCasesStatus = true;
 
