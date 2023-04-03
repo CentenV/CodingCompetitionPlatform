@@ -5,22 +5,7 @@ using System.Diagnostics;
 // Class for submitting the code
 namespace CodingCompetitionPlatform.Services
 {
-    public enum ProgrammingLanguage
-    {
-        Python,
-        Java,
-        JavaScript,
-        C,
-        CPP,
-    }
-
-    // Enum to help with determining whether test or run case type
-    public enum CaseType
-    {
-        Run,
-        Test
-    }
-
+    // Code Submission
     public class CodeSubmission
     {
         // Creating Case Files (injecting all testing and run cases), Returns the list of all the injected files
@@ -225,5 +210,53 @@ namespace CodingCompetitionPlatform.Services
                 return sr.ReadToEnd();
             }
         }
+    }
+
+    // Enum to help with determining whether test or run case type
+    public enum CaseType
+    {
+        Run,
+        Test
+    }
+
+
+
+    // Code Type
+    public enum ProgrammingLanguage
+    {
+        Python,
+        Java,
+        JavaScript,
+        C,
+        CPP,
+        CSharp
+    }
+    public class SubmittedLanguage
+    {
+        public static string GetFileExtension(ProgrammingLanguage language) 
+        {
+            switch (language) 
+            {
+                case ProgrammingLanguage.Python:
+                    return "py";
+                case ProgrammingLanguage.Java:
+                    return "java";
+                case ProgrammingLanguage.JavaScript:
+                    return "js";
+                case ProgrammingLanguage.C:
+                    return "c";
+                case ProgrammingLanguage.CPP:
+                    return "cpp";
+                case ProgrammingLanguage.CSharp:
+                    return "cs";
+                default:
+                    new CompetitionPlatformLanguageException("Invalid Language Used");
+                    return "";
+            }
+        }
+    }
+    public class CompetitionPlatformLanguageException : Exception 
+    {
+        public CompetitionPlatformLanguageException(string message) : base(message) { }
     }
 }

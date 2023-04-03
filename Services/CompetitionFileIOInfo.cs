@@ -32,7 +32,7 @@ namespace CodingCompetitionPlatform.Services
 
             // Checking whether the specfied file name is also specfied in the path
             if (!fileName.Equals(getFinalSubpath(fullFilePath)))
-                throw new PlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
+                throw new CompetitionPlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
         }
         // Storing file info based off of full file path and file name
         public CompetitionFileIOInfo(string fullFilePath, string fileName)
@@ -44,12 +44,12 @@ namespace CodingCompetitionPlatform.Services
 
             // Checking whether the specfied file name is also specfied in the path
             if (!fileName.Equals(getFinalSubpath(fullFilePath)))
-                throw new PlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
+                throw new CompetitionPlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
         }
         // Storing directory path and name only
         public CompetitionFileIOInfo(string fullOutputFolderPath, bool folder = true)
         {
-            if (folder == false) throw new PlatformFileIOException("Invalid parameter. The parameter that should be used is folder = true");
+            if (folder == false) throw new CompetitionPlatformFileIOException("Invalid parameter. The parameter that should be used is folder = true");
 
             this.destinationPath = fullOutputFolderPath;
             this.destinationName = getFinalSubpath(fullOutputFolderPath);
@@ -66,10 +66,10 @@ namespace CodingCompetitionPlatform.Services
 
             // Checking whether the specfied file name is also specfied in the path
             if (!fileName.Equals(getFinalSubpath(fullFilePath)))
-                throw new PlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
+                throw new CompetitionPlatformFileIOException($"{fileName} does match the same file name in the specified full path of the file {fullFilePath}");
             // Checking whether the specfied folder name is also specfied in the path
             if (!outputFolderName.Equals(getFinalSubpath(fullOutputFolderPath)))
-                throw new PlatformFileIOException($"{outputFolderName} does match the same file name in the specified full path of the file {fullOutputFolderPath}");
+                throw new CompetitionPlatformFileIOException($"{outputFolderName} does match the same file name in the specified full path of the file {fullOutputFolderPath}");
         }
         public CompetitionFileIOInfo(string fullFilePath, string fullOutputFolderPath, bool purePaths = true)
         {
@@ -129,7 +129,7 @@ namespace CodingCompetitionPlatform.Services
             string subpath = getFinalSubpath(filePath);
             if (!subpath.Contains("."))
             {
-                throw new PlatformFileIOException($"{subpath} in {filePath} is not a valid file to obtain a file extension from");
+                throw new CompetitionPlatformFileIOException($"{subpath} in {filePath} is not a valid file to obtain a file extension from");
             }
             else
             {
@@ -140,7 +140,7 @@ namespace CodingCompetitionPlatform.Services
         {
             string extension = "";
 
-            if (!fileName.Contains(".")) { throw new PlatformFileIOException($"{fileName} is not a valid value to obtain a file extension from"); }
+            if (!fileName.Contains(".")) { throw new CompetitionPlatformFileIOException($"{fileName} is not a valid value to obtain a file extension from"); }
 
             for (int i = fileName.Length - 1; i >= 0; i--)
             {
@@ -158,8 +158,8 @@ namespace CodingCompetitionPlatform.Services
         }
     }
 
-    public class PlatformFileIOException : Exception
+    public class CompetitionPlatformFileIOException : Exception
     {
-        public PlatformFileIOException(string message) : base(message) { }
+        public CompetitionPlatformFileIOException(string message) : base(message) { }
     }
 }

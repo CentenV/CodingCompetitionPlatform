@@ -1,6 +1,10 @@
 using CodingCompetitionPlatform.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// DATABASE CONNECTION
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("myConnString")));
 
 // AUTHENTICATION / AUTHORIZATION
 builder.Services.AddAuthentication(Credential.COOKIE_NAME).AddCookie(Credential.COOKIE_NAME, options =>
@@ -15,8 +19,6 @@ builder.Services.AddAuthorization(options =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-
-//builder.Services.AddSession();      // Added for user session!!!!!!!!!!!!!!!!
 
 var app = builder.Build();
 
@@ -36,11 +38,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseSession();       // Added for user session
-
 app.MapRazorPages();
 
 app.Run();
-
-
-//

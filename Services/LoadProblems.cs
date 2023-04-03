@@ -34,6 +34,16 @@ namespace CodingCompetitionPlatform.Services
                 initialized = false;
             }
         }
+        
+        // If There Was An Error Initializing
+        public static Problem Empty() 
+        {
+            var emptyProblem = new Problem();
+            emptyProblem.problemIndex = emptyProblem.points = emptyProblem.runCases = emptyProblem.testCases = -1;
+            emptyProblem.difficulty = emptyProblem.name = emptyProblem.description = "null";
+            return emptyProblem;
+        }
+
 
         // Convert Title (i.e. "easy" => "Easy")
         public static string ConvertTitle(string initialTitle)

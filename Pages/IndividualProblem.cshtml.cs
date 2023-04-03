@@ -39,6 +39,10 @@ namespace CodingCompetitionPlatform.Pages
             // File Upload: save file into server directory with the naming convention of TEAMID_USERID_PROBLEMNUMBER_TIME.ext
             // identifier (i.e. TEAM1234_TEST1234_1_10-16-07PM)
             string identifier = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "-").Replace(" ", "")}";
+
+            // SAMPLE, CHANGE
+            ProgrammingLanguage submittedLanguage = ProgrammingLanguage.Python;
+
             CompetitionFileIOInfo workingSaveFile, destinationFolderPath;
             try
             {
@@ -47,7 +51,7 @@ namespace CodingCompetitionPlatform.Pages
 
                 // !!!!!! Add Team name to file name
                 // Add multiplelanguage support
-                string fileExtension = "py";
+                string fileExtension = SubmittedLanguage.GetFileExtension(submittedLanguage);
                 // TEMP
                 destinationFolderPath = new CompetitionFileIOInfo($@"{PlatformConfig.SUBMISSION_OUTPUT_DIR}\{identifier}", folder: true);
                 workingSaveFile = new CompetitionFileIOInfo($@"{destinationFolderPath.destinationPath}\{identifier}.{fileExtension}");
@@ -80,7 +84,7 @@ namespace CodingCompetitionPlatform.Pages
 
 
             // Execute File and Read Output Back Out
-            status += "\nExecuting code... ";
+            status += "\nExecuting Code... ";
             
             // Create and inject all the run and test cases, get the list of all the paths to those files
             List<CompetitionFileIOInfo> runcaseCodeReady = CodeSubmission.RunCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
