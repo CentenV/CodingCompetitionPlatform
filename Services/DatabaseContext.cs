@@ -9,10 +9,10 @@ namespace CodingCompetitionPlatform.Services
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.UseSerialColumns();
+            modelBuilder.UseSerialColumns(); 
         }
 
-        public DbSet<Competitor> competitors { get; set; }
-        public DbSet<Team> teams { get; set; }
+        public DbSet<CompetitorModel> Competitors { get; set; }
+        public DbSet<Team> Teams { get; set; }
     }
 }

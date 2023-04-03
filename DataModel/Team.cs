@@ -3,13 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CodingCompetitionPlatform.Model
 {
+    [Table("teams")]
     public class Team
     {
         [Key]
         [Column("teamid")]
-        public string teamId { get; set; }
+        public string teamid { get; set; }
         [Column("teampoints")]
-        public int teamPoints { get; set; }
+        public int teampoints { get; set; }
         [Column("passphrase")]
         public string passphrase { get; set; }
         [Column("school")]
