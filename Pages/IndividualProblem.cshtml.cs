@@ -47,7 +47,7 @@ namespace CodingCompetitionPlatform.Pages
             try
             {
                 status = "Uploading File... ";
-                Console.WriteLine($"Uploaded file: {uploadedFile.FileName}");
+                Console.WriteLine($"Uploaded file: {uploadedFile?.FileName}");
 
                 // !!!!!! Add Team name to file name
                 // Add multiplelanguage support
@@ -89,11 +89,14 @@ namespace CodingCompetitionPlatform.Pages
             // Create and inject all the run and test cases, get the list of all the paths to those files
             List<CompetitionFileIOInfo> runcaseCodeReady = CodeSubmission.RunCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
             List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
-            var runcaseOutput = await CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Run, User.Identity.Name);
-            var testcaseOutput = await CodeSubmission.ExecuteCases(testcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
 
-            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput);
-            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput);
+            //Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo> runcaseOutput = null, testcaseOutput = null;
+            var runcaseOutput = CodeSubmission.ExecuteCases(runcaseCodeReady, currentProblem, CaseType.Run, User.Identity.Name);
+            var testcaseOutput = CodeSubmission.ExecuteCases(testcaseCodeReady, currentProblem, CaseType.Test, User.Identity.Name);
+            await Task.WhenAll(runcaseOutput, testcaseOutput);
+
+            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput.Result);
+            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput.Result);
 
             runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
             testCasesAllOutput = CodeSubmission.GetPassFailChallenge(testCasesActualExpected);
