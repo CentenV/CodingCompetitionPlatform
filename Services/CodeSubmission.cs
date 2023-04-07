@@ -7,11 +7,10 @@ using System.Runtime.InteropServices;
 using System.Security;
 using static System.Net.Mime.MediaTypeNames;
 
-// CODE SUBMIT //
-// Class for submitting the code
 namespace CodingCompetitionPlatform.Services
 {
-    // Code Submission
+    // CODE SUBMIT //
+    // Class for submitting the code
     public class CodeSubmission
     {
         // Creating Case Files (injecting all testing and run cases), Returns the list of all the injected files
@@ -131,7 +130,6 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Determining Whether The Code Is Correct/Incorrect
-        // returns true/false as a third 
         public static List<AECContentPassFail> GetPassFailChallenge(List<AECContent> actualexpectedOutput)
         {
             var gradedOutputs = new List<AECContentPassFail>();

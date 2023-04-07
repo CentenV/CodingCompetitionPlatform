@@ -41,8 +41,9 @@ namespace CodingCompetitionPlatform.Pages
             string identifier = $"{@User.FindFirst(ClaimTypes.GroupSid).Value}_{User.Identity.Name}_{problemIndex}_{DateTime.Now.ToLongTimeString().Replace(":", "_").Replace(" ", "")}";
 
             // SAMPLE, CHANGE
-            ProgrammingLanguage submittedLanguage = ProgrammingLanguage.Java;
+            ProgrammingLanguage submittedLanguage = ProgrammingLanguage.JavaScript;
 
+            // Read/Create file that user submits
             CompetitionFileIOInfo workingSaveFile, destinationFolderPath;
             try
             {
@@ -96,12 +97,12 @@ namespace CodingCompetitionPlatform.Pages
             List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
 
             // Run the run/test cases
-            var runcaseOutputTask = CodeSubmission.ExecuteCases(runcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Run, submittedLanguage);
-            var testcaseOutputTask = CodeSubmission.ExecuteCases(testcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Test, submittedLanguage);
+            Task<List<ActualExpectedCompiler>> runcaseOutputTask = CodeSubmission.ExecuteCases(runcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Run, submittedLanguage);
+            Task<List<ActualExpectedCompiler>> testcaseOutputTask = CodeSubmission.ExecuteCases(testcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Test, submittedLanguage);
             await Task.WhenAll(runcaseOutputTask, testcaseOutputTask);
 
-            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutputTask.Result);
-            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutputTask.Result);
+            List<AECContent> runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutputTask.Result);
+            List<AECContent> testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutputTask.Result);
             
             // Pass/Fail cases
             runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
