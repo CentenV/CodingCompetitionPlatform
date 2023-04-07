@@ -1,4 +1,5 @@
-﻿using CodingCompetitionPlatform.Model;
+﻿using CodingCompetitionPlatform.DataModel;
+using CodingCompetitionPlatform.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodingCompetitionPlatform.Services
@@ -13,6 +14,7 @@ namespace CodingCompetitionPlatform.Services
         }
 
         public DbSet<CompetitorModel> Competitors { get; set; }
-        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamModel> Teams { get; set; }
+        public DbSet<ProblemStatusModel> ProblemStatuses { get; set; }
     }
 }

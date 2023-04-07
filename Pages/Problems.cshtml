@@ -11,30 +11,15 @@
 <div id="problems-container">
     @foreach (var problem in LoadProblems.PROBLEMS)
     {
-        <a class="problem-entry" href="/problem?problemIndex=@problem.problemIndex" target="_top">
+        string ifCompletedClass = (Model.GetCompletionStatus(problem)) ? ("solved") : ("");
+        <a class="problem-entry @ifCompletedClass" href="/problem?problemIndex=@problem.problemIndex" target="_top">
             <span class="problem-title">@problem.name</span>
             <span class="problem-difficulty @problem.difficulty">@LoadProblems.ConvertTitle(problem.difficulty)</span>
             <span class="problem-points">@problem.points points</span>
         </a>
     }
 
-    <!--TEST PROBLEMS DISPLAY!!!!!!!!!!-->
-    <a class="problem-entry" href="/problem?problemIndex=1" target="_top">
-        <span class="problem-title">Problem Name</span>
-        <span class="problem-difficulty easy">Difficulty</span>
-        <span class="problem-points">10 points</span>
-    </a>
-    <a class="problem-entry completed" href="/problem" target="_top">
-        <span class="problem-title">Completed Problem Name</span>
-        <span class="problem-difficulty easy">Difficulty</span>
-        <span class="problem-points">10 points</span>
-    </a>
-    <a class="problem-entry" href="/problem" target="_top">
-        <span class="problem-title">Problem Name</span>
-        <span class="problem-difficulty medium">Difficulty</span>
-        <span class="problem-points">25 points</span>
-    </a>
-    <a class="problem-entry" href="/problem" target="_top">
+    <a class="problem-entry solved" href="/problem" target="_top">
         <span class="problem-title">Problem Name</span>
         <span class="problem-difficulty hard">Difficulty</span>
         <span class="problem-points">50 points</span>

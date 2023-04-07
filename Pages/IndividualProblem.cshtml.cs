@@ -1,4 +1,5 @@
-﻿using CodingCompetitionPlatform.Services;
+﻿using CodingCompetitionPlatform.Model;
+using CodingCompetitionPlatform.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -24,6 +25,19 @@ namespace CodingCompetitionPlatform.Pages
         public List<AECContentPassFail> runCasesAllOutput { get; set; }
         public List<AECContentPassFail> testCasesAllOutput { get; set; }
 
+        // Internal Properties
+        private string teamName;
+        public List<string> outputMessages = new List<string>();
+
+        private readonly ILogger<IndexModel> _logger;
+        private DatabaseContext _databaseContext;
+        // Constructor
+        public ProblemModel(ILogger<IndexModel> logger, DatabaseContext context)
+        {
+            _logger = logger;
+            _databaseContext = context;
+        }
+
 
         public void OnGet()
         {
@@ -33,6 +47,7 @@ namespace CodingCompetitionPlatform.Pages
 
         public async Task OnPostAsync()
         {
+            teamName = User.FindFirst(ClaimTypes.GroupSid).Value;
             LoadProblems.Initialize();
             var currentProblem = LoadProblems.PROBLEMS[problemIndex - 1];
 
@@ -47,7 +62,7 @@ namespace CodingCompetitionPlatform.Pages
             CompetitionFileIOInfo workingSaveFile, destinationFolderPath;
             try
             {
-                status = "Uploading File... ";
+                status = "Uploading File... ⏳";
                 Console.WriteLine($"Uploaded file: {uploadedFile?.FileName}");
 
                 // Configure output file name and folder in the server save directory
@@ -73,6 +88,7 @@ namespace CodingCompetitionPlatform.Pages
                 {
                     SubmittedLanguage.HandleJavaClassName(workingSaveFile, uploadedFile.FileName);
                 }
+                status = "File Uploaded. ✔️";
             }
             catch (NullReferenceException)
             {
@@ -88,34 +104,53 @@ namespace CodingCompetitionPlatform.Pages
                 return;
             }
 
-
-            // Execute File and Read Output Back Out
-            status += "\nExecuting Code... ";
-            
             // Create and inject all the run and test cases, get the list of all the paths to those files
+            status += "\nPreparing Run/Test Cases... ⏳";
             List<CompetitionFileIOInfo> runcaseCodeReady = CodeSubmission.RunCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
             List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
+            status += "\nRun/Test Cases Created. ✔️";
 
             // Run the run/test cases
+            status += "\nExecuting Code... ⏳";
             Task<List<ActualExpectedCompiler>> runcaseOutputTask = CodeSubmission.ExecuteCases(runcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Run, submittedLanguage);
             Task<List<ActualExpectedCompiler>> testcaseOutputTask = CodeSubmission.ExecuteCases(testcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Test, submittedLanguage);
             await Task.WhenAll(runcaseOutputTask, testcaseOutputTask);
+            status += "\nCode Executed. ✔️";
 
+            status += "\nGrading Run/Test Cases... ⏳";
             List<AECContent> runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutputTask.Result);
             List<AECContent> testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutputTask.Result);
-            
+            status += "\nRun/Test Cases Graded. ✔️";
+
             // Pass/Fail cases
             runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
             testCasesAllOutput = CodeSubmission.GetPassFailChallenge(testCasesActualExpected);
 
+            rewardPoints(currentProblem, runCasesAllOutput, testCasesAllOutput);
 
             displayCasesStatus = true;      // Enable display output to the user
             Console.WriteLine("\n\n\n\n");
         }
 
+        // Get Problem
         public IActionResult OnGetProblemOnClick(int problemIndex)
         {
             return Page();
+        }
+        // Managing Problem Status
+        //public string GetProblemStatus()
+        //{
+        //    string combinedOutput = "";
+        //    foreach ()
+        //}
+
+
+        // CODE SUBMISSION OPERATIONS //
+        private void rewardPoints(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult)
+        {
+            var team = (from t in _databaseContext.Teams where t.teamid == teamName select t).FirstOrDefault();
+            var updatedTeamPoints = CodeSubmission.Reward(problem, runcasesResult, testcasesResult, team);
+            _databaseContext.SaveChanges();
         }
     }
 }

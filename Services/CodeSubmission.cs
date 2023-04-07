@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using CodingCompetitionPlatform.Model;
+using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Npgsql;
 using System.Diagnostics;
 using System.Net.Mail;
@@ -149,6 +152,35 @@ namespace CodingCompetitionPlatform.Services
             return gradedOutputs;
         }
 
+        // Incrementing Points If the Problem Is Correct
+        public static TeamModel Reward(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult, TeamModel team)
+        {
+            bool allCorrect = true;
+
+            foreach (AECContentPassFail runcase in runcasesResult) 
+            {
+                if (!runcase.passChallenge)
+                {
+                    allCorrect = false;
+                }
+            }
+            foreach (AECContentPassFail testcase in testcasesResult)
+            {
+                if (!testcase.passChallenge)
+                {
+                    allCorrect = false;
+                }
+            }
+
+            if (allCorrect) 
+            {
+                int points = problem.points;
+                team.teampoints += points;
+            }
+
+            return team;
+        }
+
 
 
         // Function for Executing Code in a Docker Container
@@ -163,10 +195,11 @@ namespace CodingCompetitionPlatform.Services
             string dockerImageName = $"{SubmittedLanguage.GetLanguageName(programmingLanguage)}:{inputFile.fileName}";
             Console.WriteLine("\n" + dockerImageName);
 
-            // Docker images build command
+            // Working with Docker Images
             string buildDockerImageCmd;
-            // Compiled languages
-            if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage)) 
+            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFile.fileName} 2>&1";
+            string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
+            if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage))      // Compiled languages
             {
                 if (programmingLanguage == ProgrammingLanguage.Java) 
                 {
@@ -178,28 +211,28 @@ namespace CodingCompetitionPlatform.Services
                     buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\{SubmittedLanguage.GetLanguageName(programmingLanguage)}.dockerfile --build-arg input_file_name={inputFile.fileName} > {compileOutput.fileName}";
                 }
             }
-            // Interpreted languages
-            else
+            else     // Interpreted languages
             {
                 buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\{SubmittedLanguage.GetLanguageName(programmingLanguage)}.dockerfile --build-arg input_file_name={inputFile.fileName}";
             }
 
-            string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFile.fileName} 2>&1";
-            string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
-
+            // Build Docker image
             ExecuteCommand(buildDockerImageCmd, inputFile.fileDirectory);
 
-            // Get compile error if it occurred
+            // Get compile error if it occurred. 
             string compileErrorMessage = "";
-            if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage))
+            if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage) && CompileErrorOccurred(compileOutput))
             {
-                if (CompileErrorOccurred(compileOutput))
-                {
-                    compileErrorMessage = GetCompileError(compileOutput);
-                }
+                compileErrorMessage = GetCompileError(compileOutput);
+                ExecuteCommand($"echo \"\" > {outputFile.fileName}", inputFile.fileDirectory);
+            }
+            else
+            {
+                // Run Docker image and delete container when completed
+                ExecuteCommand(runDockerImageCmd, inputFile.fileDirectory);
             }
 
-            ExecuteCommand(runDockerImageCmd, inputFile.fileDirectory);
+            // Delete Docker image
             ExecuteCommand(cleanupDockerImageCmd, inputFile.fileDirectory);
 
             Console.WriteLine($"\nExecuted {inputFile.fileName}");

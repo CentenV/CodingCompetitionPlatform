@@ -58,7 +58,6 @@ namespace CodingCompetitionPlatform.Pages
 
         private CompetitorModel GetCompetitor(string competitorId, string passphrase)
         {
-            //var foundCompetitor = _databaseContext.Competitors.Where(c => c.competitorID == competitorId && c.team.passphrase == passphrase).FirstOrDefault();
             var foundCompetitor = (from c in _databaseContext.Competitors join t in _databaseContext.Teams on c.teamid equals t.teamid where c.competitorID == competitorId && t.passphrase == passphrase select c).Include(c => c.team).FirstOrDefault();
 
             return foundCompetitor;

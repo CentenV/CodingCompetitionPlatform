@@ -20,6 +20,6 @@ namespace CodingCompetitionPlatform.Model
         public string? teamid { get; set; }
 
         [ForeignKey("teamid")]
-        public Team team { get; set; }
+        public TeamModel team { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CodingCompetitionPlatform.Model
 {
     [Table("teams")]
-    public class Team
+    public class TeamModel
     {
         [Key]
         [Column("teamid")]

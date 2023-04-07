@@ -5,7 +5,6 @@
     // Making sure that problems are initialized
     LoadProblems.Initialize();
 
-    //var currentProblem = LoadProblems.PROBLEMS[Model.problemIndex - 1];
     Problem currentProblem;
     try
     {
@@ -17,6 +16,13 @@
         Console.WriteLine(ex);
     }
 }
+
+<script>
+    // Change status to waiting
+    function loadingStatusMsg() {
+        document.getElementById("code-output").innerHTML = "Code Submitted. ✔️\n Processing... ⏳";
+    }
+</script>
 
 <!-- PROBLEM INFO AND UPLOAD -->
 <div id="problem-container">
@@ -36,7 +42,7 @@
     <div id="problem-submission-container">
 
     </div>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="loadingStatusMsg()">
         <!--<input type="file" asp-for="uploadedFile" accept=".py" />-->
         <input type="file" asp-for="uploadedFile" />
         <input type="submit" />
