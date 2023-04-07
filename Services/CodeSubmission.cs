@@ -73,23 +73,22 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Executing All Code Cases (running all testing and run cases), Returns a dictionary with file data in it
-        // returns [{ "actual outputted file info", "expected output file info" }, ... ]
-        public static async Task<Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>> ExecuteCases(List<CompetitionFileIOInfo> cases, string userId, Problem problem, CaseType caseType, ProgrammingLanguage programmingLanguage)
+        public static async Task<List<ActualExpectedCompiler>> ExecuteCases(List<CompetitionFileIOInfo> cases, string userId, Problem problem, CaseType caseType, ProgrammingLanguage programmingLanguage)
         {
             // Execute all files given in the cases list
-            List<Task<CompetitionFileIOInfo>> executionTasks = new List<Task<CompetitionFileIOInfo>>();
+            List<Task<ExecuterCompiler>> executionTasks = new List<Task<ExecuterCompiler>>();
             foreach (CompetitionFileIOInfo file in cases)
             {
-                //executionTasks.Add(Task<CompetitionFileIOInfo>.Run(() => Execute(file, userId, programmingLanguage)));
+                executionTasks.Add(Task<CompetitionFileIOInfo>.Run(() => Execute(file, userId, programmingLanguage)));
                 
-                Execute(file, userId, programmingLanguage);
+                //Execute(file, userId, programmingLanguage);
             }
-            //await Task.WhenAll(executionTasks);
+            await Task.WhenAll(executionTasks);
 
             Console.WriteLine(executionTasks.Count);
 
             // Return the files of the outputs of the cases
-            var finalOutputs = new Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo>();
+            var finalOutputs = new List<ActualExpectedCompiler>();
             if (executionTasks.Count != cases.Count) { throw new PlatformInternalException("Internal Error, Task count and cases count do not match in the ExecuteCases() function"); }
 
             if (caseType == CaseType.Run)
@@ -98,7 +97,7 @@ namespace CodingCompetitionPlatform.Services
                 {
                     CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_runcase{i}_EO.txt");
 
-                    finalOutputs.Add(executionTasks[i].Result, expectedOutput);
+                    finalOutputs.Add(new ActualExpectedCompiler(executionTasks[i].Result.executionOutput, expectedOutput, executionTasks[i].Result.compilerErrors));
                 }
             }
             else if (caseType == CaseType.Test) 
@@ -107,7 +106,7 @@ namespace CodingCompetitionPlatform.Services
                 {
                     CompetitionFileIOInfo expectedOutput = new CompetitionFileIOInfo($@"{PlatformConfig.EXPECTEDOUTPUTS_DIR}\{problem.problemIndex}\{problem.problemIndex}_testcase{i}_EO.txt");
 
-                    finalOutputs.Add(executionTasks[i].Result, expectedOutput);
+                    finalOutputs.Add(new ActualExpectedCompiler(executionTasks[i].Result.executionOutput, expectedOutput, executionTasks[i].Result.compilerErrors));
                 }
             }
 
@@ -116,16 +115,15 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Displaying All The Executed Code to the Page, Returns a dictionary containing the output
-        // returns [{ "outputted file content", "expected output file content" }]
-        public static Dictionary<string, string> GetActualExpectedOutput(Dictionary<CompetitionFileIOInfo, CompetitionFileIOInfo> actualexpectedFiles)
+        public static List<AECContent> GetActualExpectedOutput(List<ActualExpectedCompiler> actualexpectedFiles)
         {
-            var content = new Dictionary<string, string>();
+            var content = new List<AECContent>();
 
-            foreach (var file in actualexpectedFiles) 
+            foreach (var entry in actualexpectedFiles) 
             {
-                string actualOutputContent = ReadFile(file.Key.filePath);
-                string expectedOutputContent = ReadFile(file.Value.filePath);
-                content.Add(actualOutputContent, expectedOutputContent);
+                string actualOutputContent = ReadFile(entry.actualOutput.filePath);
+                string expectedOutputContent = ReadFile(entry.executionOutput.filePath);
+                content.Add(new AECContent(actualOutputContent, expectedOutputContent, entry.compilerErrors));
             }
 
             return content;
@@ -134,19 +132,19 @@ namespace CodingCompetitionPlatform.Services
 
         // Determining Whether The Code Is Correct/Incorrect
         // returns true/false as a third 
-        public static Dictionary<KeyValuePair<string, string>, bool> GetPassFailChallenge(Dictionary<string, string> actualexpectedOutput)
+        public static List<AECContentPassFail> GetPassFailChallenge(List<AECContent> actualexpectedOutput)
         {
-            var gradedOutputs = new Dictionary<KeyValuePair<string, string>, bool>();
+            var gradedOutputs = new List<AECContentPassFail>();
 
-            foreach (var actualexpected in actualexpectedOutput)
+            foreach (var actualexpectedcompiler in actualexpectedOutput)
             {
-                if (actualexpected.Key == actualexpected.Value) 
+                if (actualexpectedcompiler.actualOutputContent == actualexpectedcompiler.expectedOutputContent) 
                 {
-                    gradedOutputs.Add(actualexpected, true);
+                    gradedOutputs.Add(new AECContentPassFail(actualexpectedcompiler, true));
                 }
                 else
                 {
-                    gradedOutputs.Add(actualexpected, false);
+                    gradedOutputs.Add(new AECContentPassFail(actualexpectedcompiler, false));
                 }
             }
 
@@ -156,18 +154,18 @@ namespace CodingCompetitionPlatform.Services
 
 
         // Function for Executing Code in a Docker Container
-        private static async Task<CompetitionFileIOInfo> Execute(CompetitionFileIOInfo inputFile, string userId, ProgrammingLanguage programmingLanguage)
+        private static async Task<ExecuterCompiler> Execute(CompetitionFileIOInfo inputFile, string userId, ProgrammingLanguage programmingLanguage)
         {
-            // Output file name
+            // Executed and compiled output file name
             CompetitionFileIOInfo outputFile = new CompetitionFileIOInfo(inputFile.fileDirectory + $@"\_{inputFile.fileName}_OUTPUT.txt");
             CompetitionFileIOInfo compileOutput = new CompetitionFileIOInfo(inputFile.fileDirectory + $@"\_{inputFile.fileName}_COMPILEOUTPUT.txt");    // Only for compiled languages
             outputFile.identifier = inputFile.identifier;
 
-            // Name of the Docker Image (language:userid). Docker image name cannot contain numbers and can only be lowercase
+            // Name of the Docker image (language:userid). Docker image name cannot contain numbers and can only be lowercase
             string dockerImageName = $"{SubmittedLanguage.GetLanguageName(programmingLanguage)}:{inputFile.fileName}";
             Console.WriteLine("\n" + dockerImageName);
 
-            // Building Docker Images
+            // Docker images build command
             string buildDockerImageCmd;
             // Compiled languages
             if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage)) 
@@ -188,20 +186,18 @@ namespace CodingCompetitionPlatform.Services
                 buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\{SubmittedLanguage.GetLanguageName(programmingLanguage)}.dockerfile --build-arg input_file_name={inputFile.fileName}";
             }
 
-
-
             string runDockerImageCmd = $"docker run --rm {dockerImageName} > {outputFile.fileName} 2>&1";
             string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
 
             ExecuteCommand(buildDockerImageCmd, inputFile.fileDirectory);
 
             // Get compile error if it occurred
-            string compileError = "";
+            string compileErrorMessage = "";
             if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage))
             {
                 if (CompileErrorOccurred(compileOutput))
                 {
-                    compileError = GetCompileError(compileOutput);
+                    compileErrorMessage = GetCompileError(compileOutput);
                 }
             }
 
@@ -210,7 +206,10 @@ namespace CodingCompetitionPlatform.Services
 
             Console.WriteLine($"\nExecuted {inputFile.fileName}");
 
-            return outputFile;
+            // Output file and compile output return object
+            ExecuterCompiler outputs = new ExecuterCompiler(outputFile, compileErrorMessage);
+
+            return outputs;
         }
 
         // Internal Methods
@@ -283,123 +282,61 @@ namespace CodingCompetitionPlatform.Services
         }
     }
 
+    // Class that stores the output file info object, compiler error message (if there is one)
+    // returned by the CodeSubmission.Execute() function
+    public class ExecuterCompiler
+    {
+        public CompetitionFileIOInfo executionOutput { get; set; }
+        public string compilerErrors { get; set; }
+
+        public ExecuterCompiler(CompetitionFileIOInfo executionOutput, string compilerErrors)
+        {
+            this.executionOutput = executionOutput;
+            this.compilerErrors = compilerErrors;
+        }
+    }
+    // Class that stores the actual output file info object, expected output file info object, compiler error message (if there is one)
+    public class ActualExpectedCompiler : ExecuterCompiler
+    {
+        public CompetitionFileIOInfo actualOutput { get; set; }
+
+        public ActualExpectedCompiler(CompetitionFileIOInfo actualOutput, CompetitionFileIOInfo executionOutput, string compilerErrors) : base(executionOutput, compilerErrors)
+        {
+            this.actualOutput = actualOutput;
+        }
+    }
+
+    // Class that stores the content of the actual output file, expected output file, and compiler error message (if there is one)
+    public class AECContent
+    {
+        // AEC: Actual Expected Compiler
+        public string actualOutputContent { get; set; }
+        public string expectedOutputContent { get; set; }
+        public string compilerError { get; set; }
+
+        public AECContent(string actualOutputContent, string expectedOutputContent, string compilerError)
+        {
+            this.actualOutputContent = actualOutputContent;
+            this.expectedOutputContent = expectedOutputContent;
+            this.compilerError = compilerError;
+        }
+    }
+    // Class that stores the actual, expected, compiler file contents and whether they passed/failed the problem
+    public class AECContentPassFail : AECContent
+    {
+        public bool passChallenge { get; set; }
+
+        public AECContentPassFail(AECContent actualExpectedCompiler, bool passfailChallenge) : base(actualExpectedCompiler.actualOutputContent, actualExpectedCompiler.expectedOutputContent, actualExpectedCompiler.compilerError)
+        {
+            passChallenge = passfailChallenge;
+        }
+    }
+
+
     // Enum to help with determining whether test or run case type
     public enum CaseType
     {
         Run,
         Test
-    }
-
-
-    // Code Type
-    public enum ProgrammingLanguage
-    {
-        Python,
-        Java,
-        JavaScript,
-        C,
-        CPP,
-        CSharp
-    }
-    public class SubmittedLanguage
-    {
-        public static string GetLanguageName(ProgrammingLanguage language)
-        {
-            switch (language)
-            {
-                case ProgrammingLanguage.Python:
-                    return "python";
-                case ProgrammingLanguage.Java:
-                    return "java";
-                case ProgrammingLanguage.JavaScript:
-                    return "javascript";
-                case ProgrammingLanguage.C:
-                    return "c";
-                case ProgrammingLanguage.CPP:
-                    return "cpp";
-                case ProgrammingLanguage.CSharp:
-                    return "csharp";
-                default:
-                    throw new CompetitionPlatformLanguageException("Invalid Language Used");
-            }
-        }
-        public static string GetFileExtension(ProgrammingLanguage language) 
-        {
-            switch (language) 
-            {
-                case ProgrammingLanguage.Python:
-                    return "py";
-                case ProgrammingLanguage.Java:
-                    return "java";
-                case ProgrammingLanguage.JavaScript:
-                    return "js";
-                case ProgrammingLanguage.C:
-                    return "c";
-                case ProgrammingLanguage.CPP:
-                    return "cpp";
-                case ProgrammingLanguage.CSharp:
-                    return "cs";
-                default:
-                    throw new CompetitionPlatformLanguageException("Invalid language used");
-            }
-        }
-        public static bool IsCompiledLanguage(ProgrammingLanguage language)
-        {
-            switch (language)
-            {
-                case ProgrammingLanguage.Java: case ProgrammingLanguage.C: case ProgrammingLanguage.CPP: case ProgrammingLanguage.CSharp:
-                    return true;
-                case ProgrammingLanguage.Python: case ProgrammingLanguage.JavaScript:
-                    return false;
-                default:
-                    throw new CompetitionPlatformLanguageException("Unable to determine whether a language was compiled or interpreted");
-            }
-        }
-
-        public static void HandleJavaClassName(CompetitionFileIOInfo file, string initialClassName)
-        {
-            /// Changes the class name to match the file name
-
-            // Get file/java class name
-            string initialFileClassName = "";
-            if (initialClassName.Contains("."))
-            {
-                for (int i = 0; i < initialClassName.Length; i++)
-                {
-                    if (initialClassName[i] == '.')
-                    {
-                        initialFileClassName = initialClassName.Substring(0, i);
-                    }
-                }
-            }
-            else
-            {
-                initialFileClassName = initialClassName;
-            }
-            
-
-            // Read file and replace the class name
-            string uploadedJavaFileContent = File.ReadAllText(file.filePath);
-
-            if (uploadedJavaFileContent == null || uploadedJavaFileContent.Length <= 7)
-            {
-                throw new Exception("Java File Error");
-            }
-
-            string initClassDef = $"class {initialFileClassName}";
-            if (!uploadedJavaFileContent.Contains(initClassDef))
-            {
-                throw new Exception("No Class Found in Java File. Is the .java file named the same as the class?");
-            }
-            else
-            {
-                string newFileContent = uploadedJavaFileContent.Replace(initClassDef, $"class {file.identifier}");
-                File.WriteAllText(file.filePath, newFileContent);
-            }
-        }
-    }
-    public class CompetitionPlatformLanguageException : Exception 
-    {
-        public CompetitionPlatformLanguageException(string message) : base(message) { }
     }
 }

@@ -58,10 +58,7 @@
     border: none;
     border-top: 0.2em solid white;
 }
-.report-tab-option:hover {
-    background-color: var(--surface-color);
-}
-.report-tab-option.active {
+.report-tab-option:hover, .report-tab-option.active {
     background-color: var(--surface-color);
 }
 .report-tab-option.problem-passed {
@@ -120,7 +117,7 @@
 .actual-output-container {
 /*    margin-top: 1em;*/
 }
-.expected-output-container {
+.expected-output-container, .compiler-output-container {
     margin-top: 2em;
 }
 

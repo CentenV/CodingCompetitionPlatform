@@ -21,8 +21,8 @@ namespace CodingCompetitionPlatform.Pages
         public bool displayCasesStatus { get; set; }
 
         // Displaying the Run/Test Cases and the Actual/Expected Output
-        public Dictionary<KeyValuePair<string, string>, bool> runCasesAllOutput { get; set; }
-        public Dictionary<KeyValuePair<string, string>, bool> testCasesAllOutput { get; set; }
+        public List<AECContentPassFail> runCasesAllOutput { get; set; }
+        public List<AECContentPassFail> testCasesAllOutput { get; set; }
 
 
         public void OnGet()
@@ -96,15 +96,17 @@ namespace CodingCompetitionPlatform.Pages
             List<CompetitionFileIOInfo> testcaseCodeReady = CodeSubmission.TestCaseFiles(currentProblem, workingSaveFile, User.Identity.Name);
 
             // Run the run/test cases
-            var runcaseOutput = CodeSubmission.ExecuteCases(runcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Run, submittedLanguage);
-            var testcaseOutput = CodeSubmission.ExecuteCases(testcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Test, submittedLanguage);
-            await Task.WhenAll(runcaseOutput, testcaseOutput);
+            var runcaseOutputTask = CodeSubmission.ExecuteCases(runcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Run, submittedLanguage);
+            var testcaseOutputTask = CodeSubmission.ExecuteCases(testcaseCodeReady, User.Identity.Name, currentProblem, CaseType.Test, submittedLanguage);
+            await Task.WhenAll(runcaseOutputTask, testcaseOutputTask);
 
-            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutput.Result);
-            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutput.Result);
-
+            var runCasesActualExpected = CodeSubmission.GetActualExpectedOutput(runcaseOutputTask.Result);
+            var testCasesActualExpected = CodeSubmission.GetActualExpectedOutput(testcaseOutputTask.Result);
+            
+            // Pass/Fail cases
             runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
             testCasesAllOutput = CodeSubmission.GetPassFailChallenge(testCasesActualExpected);
+
 
             displayCasesStatus = true;      // Enable display output to the user
             Console.WriteLine("\n\n\n\n");
