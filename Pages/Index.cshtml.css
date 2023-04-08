@@ -2,7 +2,8 @@
 /*************************/
 #home-container {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
     height: 100%;
     overflow: hidden;
 }
@@ -13,11 +14,25 @@
     width: auto;
     height: inherit;
     grid-column: 1 / 1;
+    grid-row: 1 / 3;
 }
 #problems-iframe {
     height: 99%;
     width: 100%;
     scrollbar-color: red;
+}
+/* IFRAME SHOWING THE LEADERBOARD */
+#leaderboard-iframe-container {
+    padding: 1em;
+    border-radius: var(--border-radius);
+    background-color: var(--surface-color);
+    margin-left: 2em;
+    width: auto;
+}
+#leaderboard-iframe {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 /*!!!!!!!!!!!*/

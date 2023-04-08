@@ -1,0 +1,27 @@
+﻿body {
+}
+
+table {
+    width: 100%;
+}
+th {
+    font-size: 2em;
+    font-weight: 800;
+    padding: 1em;
+}
+td {
+    padding: 0.5em;
+    padding-bottom: 1em;
+    font-size: 1.2em;
+}
+tr:nth-child(even) {
+    background-color: var(--background-color);
+}
+
+.name {
+    text-align: left;
+    font-weight: 600;
+}
+.points {
+    text-align: right;
+}

@@ -199,7 +199,7 @@ namespace CodingCompetitionPlatform.Services
             string cleanupDockerImageCmd = $"docker rmi -f {dockerImageName}";
             if (SubmittedLanguage.IsCompiledLanguage(programmingLanguage))      // Compiled languages
             {
-                if (programmingLanguage == ProgrammingLanguage.Java) 
+                if (programmingLanguage == ProgrammingLanguage.JAVA) 
                 {
                     // Special run case for Java
                     buildDockerImageCmd = $@"docker build .\ -t {dockerImageName} -f {PlatformConfig.DOCKERFILES_DIR}\{SubmittedLanguage.GetLanguageName(programmingLanguage)}.dockerfile --build-arg input_file_name={inputFile.fileName} --build-arg class_name={inputFile.identifier} > {compileOutput.fileName}";
@@ -286,7 +286,7 @@ namespace CodingCompetitionPlatform.Services
 
             if (receivingFilePath.fileExtension == "java")
             {
-                SubmittedLanguage.HandleJavaClassName(destinationFile, receivingFilePath.identifier);
+                SubmittedLanguage.HandleJavaFileClassName(destinationFile, receivingFilePath.identifier);
             }
         }
 

@@ -13,11 +13,15 @@
     setInterval(function()
     {
         document.getElementById("problems-iframe").contentWindow.location.reload();
+        document.getElementById("leaderboard-iframe").contentWindow.location.reload();
     }, 2000);
 </script>
 
 <div id="home-container">
     <div id="problem-iframe-container">
         <iframe src="/problems" id="problems-iframe" class="live-content"></iframe>
+    </div>
+    <div id="leaderboard-iframe-container">
+        <iframe src="/leaderboardemb" id="leaderboard-iframe" class="live-content"></iframe>
     </div>
 </div>

@@ -49,3 +49,21 @@ a:hover {
     color: var(--text-color);
     border: var(--border-hover);
 }
+
+textarea {
+    width: 97%;
+    height: 50vh;
+    border: none;
+    outline: none;
+    padding: 1em;
+    margin-top: 1em;
+    resize: none;
+    font-family: var(--code-font);
+    font-weight: 600;
+    background-color: #484848;
+    color: lightblue;
+}
+    textarea:focus {
+        border: none;
+        outline: none;
+    }

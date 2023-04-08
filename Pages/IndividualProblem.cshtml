@@ -18,10 +18,63 @@
 }
 
 <script>
-    // Change status to waiting
+    // Change Status to Waiting
     function loadingStatusMsg() {
         document.getElementById("code-output").innerHTML = "Code Submitted. ✔️\n Processing... ⏳";
     }
+
+    // Toggle the Upload Type
+    function toggleUploadType() {
+        if (document.getElementById("file-upload").style.display == "none")
+        {
+            document.getElementById("toggle-uploadtype-button").innerHTML = "Code Block";
+            document.getElementById("file-upload").style.display = "block";
+            document.getElementById("code-box-container").style.display = "none";
+            document.getElementById("code-box-textarea").value = "";
+        }
+        else
+        {
+            document.getElementById("toggle-uploadtype-button").innerHTML = "Upload File";
+            document.getElementById('file-upload').style.display = "none";
+            document.getElementById('file-upload').value = "";
+            document.getElementById("code-box-container").style.display = "block";
+        }
+    }
+    function langOptionChanged(lang) {
+        const javaPreloadCode = "class ProblemSolution\n{\n}";
+        if (lang == "java")
+        {
+            document.getElementById("code-box-textarea").value = javaPreloadCode;
+        }
+        else
+        {
+            if (document.getElementById("code-box-textarea").value == javaPreloadCode) {
+                document.getElementById("code-box-textarea").value = "";
+            }
+        }
+    }
+
+    //Allow for Indentation with Tab Key in the Textbox
+    window.addEventListener("load", function() {
+        document.getElementById("code-box-textarea").onkeydown = function (e) {
+            if (e.key === 'Tab') {  
+                // Prevent the focus loss
+                e.preventDefault();
+                // Get caret position/selection
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+
+                var target = e.target;
+                var value = target.value;
+
+                // Set textarea value to: text before caret + tab + text after caret
+                target.value = value.substring(0, start) + "\t" + value.substring(end);
+
+                // Put caret at right position again
+                this.selectionStart = this.selectionEnd = start + 1;
+            }
+        }
+    });
 </script>
 
 <!-- PROBLEM INFO AND UPLOAD -->
@@ -42,15 +95,35 @@
     <div id="problem-submission-container">
         @if (!Model.GetCompletionStatus())
         {
+            <button id="toggle-uploadtype-button" onclick="toggleUploadType()">Upload File</button>
             <form method="post" enctype="multipart/form-data" onsubmit="loadingStatusMsg()">
-                <!--<input type="file" asp-for="uploadedFile" accept=".py" />-->
-                <input type="file" asp-for="uploadedFile" />
-                <input type="submit" />
+                <!--Codebox/Textbox Input-->
+                <div id="code-box-container">
+                    <div id="language-selector">
+                        <input onclick="langOptionChanged('java')" type="radio" asp-for="language" value="Java" id="language-selector-java">
+                        <label for="language-selector-java">Java</label>
+                        <input onclick="langOptionChanged('python')" type="radio" asp-for="language" value="Python">
+                        <label>Python</label>
+                        <input onclick="langOptionChanged('javascript')" type="radio" asp-for="language" value="JavaScript">
+                        <label>JavaScript</label>
+                    </div>
+                    <div>
+                        <textarea id="code-box-textarea" asp-for="uploadedCode" cols="30" rows="10" spellcheck="false"></textarea>
+                    </div>
+                </div>
+
+                <!--File Upload-->
+                <label class="file">
+                    <input type="file" accept=".py, .js, .java" asp-for="uploadedFile" style="display:none" id="file-upload" />
+                    <span class="file-custom"></span>
+                </label>
+
+                <!--Submit Button-->
+                <input type="submit" value="Submit Code" id="submit-code-button" />
             </form>
         }
     </div>
     
-    <div>@Model.error</div>
     <div id="code-output" class="code">@Model.status</div>
 </div>
 
@@ -160,7 +233,7 @@
                             <span class="output-tag">Expected Output</span>
                             <div class="code testcase-expected-output">@Model.testCasesAllOutput[i].expectedOutputContent</div>
                         </div>
-                        <div class="case-identifier">Test Case @(i + 1)</div>
+                        <div class="case-identifier">@Model.submittedLanguage.ToString(), Test Case @(i + 1)</div>
                     </div>
                 }
             </div>

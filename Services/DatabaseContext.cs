@@ -15,5 +15,7 @@ namespace CodingCompetitionPlatform.Services
         public DbSet<CompetitorModel> Competitors { get; set; }
         public DbSet<TeamModel> Teams { get; set; }
         public DbSet<ProblemStatusModel> ProblemStatuses { get; set; }
+
+        //public DbSet< MyProperty { get; set; }
     }
 }

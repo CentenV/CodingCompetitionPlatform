@@ -1,0 +1,31 @@
+﻿@page "/leaderboardemb"
+@model CodingCompetitionPlatform.Pages.Leaderboard_embeddedModel
+@{
+    Layout = null;
+}
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/leaderboard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/CodingCompetitionPlatform.styles.css" asp-append-version="true" />
+
+<style>
+    html, body {
+        background-color: var(--surface-color);
+    }
+</style>
+
+<div>
+    <table>
+        <tr>
+            <th class="name">Team ID</th>
+            <th class="points">Points</th>
+        </tr>
+        @foreach (var team in Model.GetTop5Teams())
+        {
+            <tr>
+                <td class="name">@team.teamid</td>
+                <td class="points">@team.teampoints</td>
+            </tr>
+        }
+    </table>
+</div>

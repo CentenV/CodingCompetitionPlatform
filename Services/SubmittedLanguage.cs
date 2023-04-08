@@ -3,12 +3,12 @@
     // Submitted Code Type
     public enum ProgrammingLanguage
     {
-        Python,
-        Java,
-        JavaScript,
+        PYTHON,
+        JAVA,
+        JAVASCRIPT,
         C,
         CPP,
-        CSharp
+        CSHARP
     }
     public class SubmittedLanguage
     {
@@ -16,17 +16,17 @@
         {
             switch (language)
             {
-                case ProgrammingLanguage.Python:
+                case ProgrammingLanguage.PYTHON:
                     return "python";
-                case ProgrammingLanguage.Java:
+                case ProgrammingLanguage.JAVA:
                     return "java";
-                case ProgrammingLanguage.JavaScript:
+                case ProgrammingLanguage.JAVASCRIPT:
                     return "javascript";
                 case ProgrammingLanguage.C:
                     return "c";
                 case ProgrammingLanguage.CPP:
                     return "cpp";
-                case ProgrammingLanguage.CSharp:
+                case ProgrammingLanguage.CSHARP:
                     return "csharp";
                 default:
                     throw new CompetitionPlatformLanguageException("Invalid Language Used");
@@ -36,17 +36,17 @@
         {
             switch (language)
             {
-                case ProgrammingLanguage.Python:
+                case ProgrammingLanguage.PYTHON:
                     return "py";
-                case ProgrammingLanguage.Java:
+                case ProgrammingLanguage.JAVA:
                     return "java";
-                case ProgrammingLanguage.JavaScript:
+                case ProgrammingLanguage.JAVASCRIPT:
                     return "js";
                 case ProgrammingLanguage.C:
                     return "c";
                 case ProgrammingLanguage.CPP:
                     return "cpp";
-                case ProgrammingLanguage.CSharp:
+                case ProgrammingLanguage.CSHARP:
                     return "cs";
                 default:
                     throw new CompetitionPlatformLanguageException("Invalid language used");
@@ -56,20 +56,20 @@
         {
             switch (language)
             {
-                case ProgrammingLanguage.Java:
+                case ProgrammingLanguage.JAVA:
                 case ProgrammingLanguage.C:
                 case ProgrammingLanguage.CPP:
-                case ProgrammingLanguage.CSharp:
+                case ProgrammingLanguage.CSHARP:
                     return true;
-                case ProgrammingLanguage.Python:
-                case ProgrammingLanguage.JavaScript:
+                case ProgrammingLanguage.PYTHON:
+                case ProgrammingLanguage.JAVASCRIPT:
                     return false;
                 default:
                     throw new CompetitionPlatformLanguageException("Unable to determine whether a language was compiled or interpreted");
             }
         }
 
-        public static void HandleJavaClassName(CompetitionFileIOInfo file, string initialClassName)
+        public static void HandleJavaFileClassName(CompetitionFileIOInfo file, string initialClassName)
         {
             /// Changes the class name to match the file name
 

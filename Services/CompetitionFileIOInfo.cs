@@ -27,8 +27,8 @@ namespace CodingCompetitionPlatform.Services
         {
             this.filePath = fullFilePath;
             this.fileName = (fileName == null) ? getFinalSubpath(fullFilePath) : fileName;
-            this.fileExtension = getFileExtension(fullFilePath);
-            this.fileDirectory = getDirectory(fullFilePath);
+            this.fileExtension = GetFileExtension(fullFilePath);
+            this.fileDirectory = GetDirectory(fullFilePath);
 
             // Checking whether the specfied file name is also specfied in the path
             if (!fileName.Equals(getFinalSubpath(fullFilePath)))
@@ -39,8 +39,8 @@ namespace CodingCompetitionPlatform.Services
         {
             this.filePath = fullFilePath;
             this.fileName = (fileName == null) ? getFinalSubpath(fullFilePath) : fileName;
-            this.fileExtension = getFileExtension(fullFilePath);
-            this.fileDirectory = getDirectory(fullFilePath);
+            this.fileExtension = GetFileExtension(fullFilePath);
+            this.fileDirectory = GetDirectory(fullFilePath);
 
             // Checking whether the specfied file name is also specfied in the path
             if (!fileName.Equals(getFinalSubpath(fullFilePath)))
@@ -60,7 +60,7 @@ namespace CodingCompetitionPlatform.Services
             this.fileName = fileName;
             this.filePath = fullFilePath;
             this.fileExtension = getFileExtension();
-            this.fileDirectory = getDirectory(fullFilePath);
+            this.fileDirectory = GetDirectory(fullFilePath);
             this.destinationName = outputFolderName;
             this.destinationPath = fullOutputFolderPath;
 
@@ -77,8 +77,8 @@ namespace CodingCompetitionPlatform.Services
             // File name and output folder name are automatically handled
             this.filePath = fullFilePath;
             this.fileName = getFinalSubpath(filePath);
-            this.fileDirectory = getDirectory(filePath);
-            this.fileExtension = getFileExtension(fullFilePath);
+            this.fileDirectory = GetDirectory(filePath);
+            this.fileExtension = GetFileExtension(fullFilePath);
 
             this.destinationPath = fullOutputFolderPath;
             this.destinationName = getFinalSubpath(fullOutputFolderPath);
@@ -107,7 +107,7 @@ namespace CodingCompetitionPlatform.Services
             return lastSubpath;
         }
         // Gets directory in which a file is contained in
-        private string getDirectory(string path)
+        private string GetDirectory(string path)
         {
             string directoryPath = "";
             for (int i = path.Length - 1; i >= 0; i--)
@@ -133,10 +133,10 @@ namespace CodingCompetitionPlatform.Services
             }
             else
             {
-                return getFileExtension(subpath);
+                return GetFileExtension(subpath);
             }
         }
-        private string getFileExtension(string fileName)     // Given name only
+        public static string GetFileExtension(string fileName)     // Given name only
         {
             string extension = "";
 
