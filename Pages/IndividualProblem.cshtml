@@ -40,16 +40,17 @@
     </div>
 
     <div id="problem-submission-container">
-
+        @if (!Model.GetCompletionStatus())
+        {
+            <form method="post" enctype="multipart/form-data" onsubmit="loadingStatusMsg()">
+                <!--<input type="file" asp-for="uploadedFile" accept=".py" />-->
+                <input type="file" asp-for="uploadedFile" />
+                <input type="submit" />
+            </form>
+        }
     </div>
-    <form method="post" enctype="multipart/form-data" onsubmit="loadingStatusMsg()">
-        <!--<input type="file" asp-for="uploadedFile" accept=".py" />-->
-        <input type="file" asp-for="uploadedFile" />
-        <input type="submit" />
-    </form>
-
+    
     <div>@Model.error</div>
-
     <div id="code-output" class="code">@Model.status</div>
 </div>
 

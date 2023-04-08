@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CodingCompetitionPlatform.DataModel
+namespace CodingCompetitionPlatform.Model
 {
     [Table("problemstatus")]
     public class ProblemStatusModel

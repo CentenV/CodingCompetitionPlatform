@@ -1,14 +1,5 @@
 ﻿using CodingCompetitionPlatform.Model;
-using Microsoft.AspNetCore.Connections.Features;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Npgsql;
 using System.Diagnostics;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Security;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CodingCompetitionPlatform.Services
 {
@@ -153,10 +144,11 @@ namespace CodingCompetitionPlatform.Services
         }
 
         // Incrementing Points If the Problem Is Correct
-        public static TeamModel Reward(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult, TeamModel team)
+        public static void Reward(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult, TeamModel team, ProblemStatusModel problemStatus)
         {
             bool allCorrect = true;
 
+            // Check if all run/test cases are true
             foreach (AECContentPassFail runcase in runcasesResult) 
             {
                 if (!runcase.passChallenge)
@@ -172,13 +164,19 @@ namespace CodingCompetitionPlatform.Services
                 }
             }
 
+            // If all the run and test cases are correct, award points
             if (allCorrect) 
             {
-                int points = problem.points;
-                team.teampoints += points;
+                // Validate that the problem is not marked completed in the database before awarding points and marking complete
+                if (!problemStatus.problemcompleted)
+                {
+                    // Mark completed
+                    problemStatus.problemcompleted = true;
+                    // Increment points
+                    int points = problem.points;
+                    team.teampoints += points;
+                }
             }
-
-            return team;
         }
 
 

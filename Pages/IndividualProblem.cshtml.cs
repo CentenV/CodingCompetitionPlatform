@@ -3,7 +3,6 @@ using CodingCompetitionPlatform.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Reflection;
 using System.Security.Claims;
 
 namespace CodingCompetitionPlatform.Pages
@@ -26,7 +25,7 @@ namespace CodingCompetitionPlatform.Pages
         public List<AECContentPassFail> testCasesAllOutput { get; set; }
 
         // Internal Properties
-        private string teamName;
+        private string teamId;
         public List<string> outputMessages = new List<string>();
 
         private readonly ILogger<IndexModel> _logger;
@@ -43,11 +42,12 @@ namespace CodingCompetitionPlatform.Pages
         {
             status = "No file submitted.";
             displayCasesStatus = false;
+            teamId = User.FindFirst(ClaimTypes.GroupSid).Value;
         }
 
         public async Task OnPostAsync()
         {
-            teamName = User.FindFirst(ClaimTypes.GroupSid).Value;
+            teamId = User.FindFirst(ClaimTypes.GroupSid).Value;
             LoadProblems.Initialize();
             var currentProblem = LoadProblems.PROBLEMS[problemIndex - 1];
 
@@ -126,17 +126,21 @@ namespace CodingCompetitionPlatform.Pages
             runCasesAllOutput = CodeSubmission.GetPassFailChallenge(runCasesActualExpected);
             testCasesAllOutput = CodeSubmission.GetPassFailChallenge(testCasesActualExpected);
 
-            rewardPoints(currentProblem, runCasesAllOutput, testCasesAllOutput);
+            RewardPoints(currentProblem, runCasesAllOutput, testCasesAllOutput);
 
             displayCasesStatus = true;      // Enable display output to the user
             Console.WriteLine("\n\n\n\n");
         }
 
         // Get Problem
-        public IActionResult OnGetProblemOnClick(int problemIndex)
-        {
-            return Page();
-        }
+        //public IActionResult OnGetProblemOnClick(int problemIndex)
+        //{
+        //    // Redirect to /index If Problem Solved
+        //    var problemInDb = (from p in _databaseContext.ProblemStatuses where p.teamid == teamId && p.problemid == problemIndex select p).FirstOrDefault();
+        //    if (problemInDb.problemcompleted) { return RedirectToPage("/index"); }
+
+        //    return Page();
+        //}
         // Managing Problem Status
         //public string GetProblemStatus()
         //{
@@ -145,12 +149,25 @@ namespace CodingCompetitionPlatform.Pages
         //}
 
 
+
         // CODE SUBMISSION OPERATIONS //
-        private void rewardPoints(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult)
+
+        // Reward points if problem was correctly solved with all test cases
+        private void RewardPoints(Problem problem, List<AECContentPassFail> runcasesResult, List<AECContentPassFail> testcasesResult)
         {
-            var team = (from t in _databaseContext.Teams where t.teamid == teamName select t).FirstOrDefault();
-            var updatedTeamPoints = CodeSubmission.Reward(problem, runcasesResult, testcasesResult, team);
+            // Get team and update points
+            TeamModel? teamInDb = (from t in _databaseContext.Teams where t.teamid == teamId select t).FirstOrDefault();
+            ProblemStatusModel? problemInDb = (from p in _databaseContext.ProblemStatuses where p.teamid == teamInDb.teamid && p.problemid == problem.problemIndex select p).FirstOrDefault();
+            CodeSubmission.Reward(problem, runcasesResult, testcasesResult, teamInDb, problemInDb);
+
             _databaseContext.SaveChanges();
+        }
+
+        public bool GetCompletionStatus()
+        {
+            ProblemStatusModel? problemInDb = (from p in _databaseContext.ProblemStatuses where p.teamid == teamId && p.problemid == problemIndex select p).FirstOrDefault();
+            if (problemInDb.problemcompleted) { status = "Problem Completed ✔️"; }
+            return problemInDb.problemcompleted;
         }
     }
 }

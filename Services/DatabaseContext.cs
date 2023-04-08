@@ -1,5 +1,4 @@
-﻿using CodingCompetitionPlatform.DataModel;
-using CodingCompetitionPlatform.Model;
+﻿using CodingCompetitionPlatform.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodingCompetitionPlatform.Services
