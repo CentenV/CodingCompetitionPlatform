@@ -16,11 +16,14 @@
 <body>
     <!-- HEADER -->
     <header>
+        <div>Welcome</div>
         <a class="page-link-button" asp-page="/index">Home</a>
         <a class="page-link-button" asp-page="">Leaderboard</a>
 
-        <span>@User.Identity.Name</span>
-        <span>@User.FindFirst(ClaimTypes.GroupSid).Value</span>
+        <div>
+            <span>@User.Identity.Name</span>
+            <span>@User.FindFirst(ClaimTypes.GroupSid).Value</span>
+        </div>
     </header>
 
     <!-- CONTENT -->
